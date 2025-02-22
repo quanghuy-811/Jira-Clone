@@ -1,33 +1,31 @@
 import { axiosInstance } from "../axios";
-
+const interseter = axiosInstance();
 export const projectService = {
   getAllProjects: async () => {
-    const response = await axiosInstance.get("/Project/getAllProject");
+    const response = await interseter.get("/Project/getAllProject");
     return response.data;
   },
 
   createProject: async (projectData) => {
-    const response = await axiosInstance.post(
-      "/Project/createProjectAuthorize",
-      {
-        projectName: projectData.projectName,
-        description: projectData.description,
-        categoryId: projectData.categoryId,
-        alias: projectData.projectName.toLowerCase().replace(/ /g, "-"),
-      }
-    );
+    const response = await interseter.post("/Project/createProjectAuthorize", {
+      projectName: projectData.projectName,
+      description: projectData.description,
+      categoryId: projectData.categoryId,
+      alias: projectData.projectName.toLowerCase().replace(/ /g, "-"),
+    });
     return response.data;
   },
 
   getProjectById: async (id) => {
-    const response = await axiosInstance.get(
+    //const interseterServer = axiosInstance(ctx); // Truyền ctx khi gọi trên server
+    const response = await axiosInstance().get(
       `/Project/getProjectDetail?id=${id}`
     );
     return response.data;
   },
 
   updateProject: async (id, projectData) => {
-    const response = await axiosInstance.put(
+    const response = await interseter.put(
       `/Project/updateProject?projectId=${id}`,
       {
         id,
@@ -40,7 +38,7 @@ export const projectService = {
   },
 
   deleteProject: async (projectId) => {
-    const response = await axiosInstance.delete(
+    const response = await interseter.delete(
       `/Project/deleteProject?projectId=${projectId}`
     );
     return response.data;
@@ -48,7 +46,7 @@ export const projectService = {
 
   // User Management
   assignUserToProject: async (projectId, userId) => {
-    const response = await axiosInstance.post("/Project/assignUserProject", {
+    const response = await interseter.post("/Project/assignUserProject", {
       projectId,
       userId,
     });
@@ -57,7 +55,7 @@ export const projectService = {
 
   // Categories
   getCategories: async () => {
-    const response = await axiosInstance.get("/ProjectCategory");
+    const response = await interseter.get("/ProjectCategory");
     return response.data.content;
   },
 };

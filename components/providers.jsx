@@ -4,13 +4,15 @@ import { Provider } from "react-redux";
 import { store } from "@/store";
 import { useEffect } from "react";
 import { loginSuccess } from "@/store/slices/authSlice";
+import { getClientAuthToken } from "@/lib/utils";
+import { Toaster } from "sonner";
 
 function AuthProvider({ children }) {
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+    const token = getClientAuthToken("accessToken");
 
     if (token) {
-      const userData = JSON.parse(localStorage.getItem("userData"));
+      const userData = getClientAuthToken("userData");
 
       if (userData) {
         store.dispatch(
@@ -31,6 +33,7 @@ export function Providers({ children }) {
   return (
     <Provider store={store}>
       <AuthProvider>{children}</AuthProvider>
+      <Toaster richColors position="top-right" />
     </Provider>
   );
 }

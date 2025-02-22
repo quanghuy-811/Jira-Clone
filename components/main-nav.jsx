@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/store/slices/authSlice";
+import { removeCookies } from "@/lib/utils";
 
 export function MainNav() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export function MainNav() {
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem("accessToken");
+    removeCookies("accessToken");
     router.push("/");
   };
 
@@ -44,13 +45,16 @@ export function MainNav() {
     <header className="bg-white border-b">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-8">
-          <Link href="/dashboard/projects" className="text-xl font-bold">
+          <Link
+            href="/dashboard/projects"
+            className="text-2xl font-medium font-sans"
+          >
             Jira Clone
           </Link>
-          <div className="flex space-x-4">
+          <div className="flex items-center space-x-4">
             <Link
               href="/dashboard/projects"
-              className={`text-gray-600 hover:text-gray-900 ${
+              className={`text-gray-600 hover:text-gray-900 font-normal text-base font-serif  ${
                 pathname === "/dashboard/projects" ? "text-gray-900" : ""
               }`}
             >
@@ -58,7 +62,7 @@ export function MainNav() {
             </Link>
             <Link
               href="/dashboard/profile"
-              className={`text-gray-600 hover:text-gray-900 ${
+              className={`text-gray-600 hover:text-gray-900 font-normal text-base font-serif ${
                 pathname === "/dashboard/profile" ? "text-gray-900" : ""
               }`}
             >

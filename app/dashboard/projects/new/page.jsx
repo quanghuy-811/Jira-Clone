@@ -15,6 +15,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { projectService } from "@/lib/services/projectService";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
 
 export default function CreateProjectPage() {
   const router = useRouter();
@@ -54,73 +61,93 @@ export default function CreateProjectPage() {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <h1 className="text-2xl font-bold">Create New Project</h1>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Project Name
-            </label>
-            <Input
-              value={formData.projectName}
-              onChange={(e) =>
-                setFormData({ ...formData, projectName: e.target.value })
-              }
-              required
-            />
-          </div>
+    <div className="max-w-5xl mx-auto">
+      <div>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <Link className="text-gray-800" href="/dashboard/projects">
+                Projects
+              </Link>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="text-gray-800" />
+            <Link className="text-gray-800" href={`/dashboard/projects/new`}>
+              New
+            </Link>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+      <Card className="mt-5">
+        <CardHeader>
+          <h1 className="text-2xl font-bold">Create New Project</h1>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Project Name
+              </label>
+              <Input
+                value={formData.projectName}
+                onChange={(e) =>
+                  setFormData({ ...formData, projectName: e.target.value })
+                }
+                required
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Description
-            </label>
-            <Textarea
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              required
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Description
+              </label>
+              <Textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                required
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Category</label>
-            <Select
-              value={formData.categoryId}
-              onValueChange={(value) =>
-                setFormData({ ...formData, categoryId: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories?.map((category) => (
-                  <SelectItem key={category.id} value={category.id.toString()}>
-                    {category.projectCategoryName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Category</label>
+              <Select
+                value={formData.categoryId}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, categoryId: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories?.map((category) => (
+                    <SelectItem
+                      key={category.id}
+                      value={category.id.toString()}
+                    >
+                      {category.projectCategoryName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex justify-end space-x-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push("/dashboard/projects")}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Project"}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            <div className="flex justify-end space-x-4">
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => router.push("/dashboard/projects")}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Creating..." : "Create Project"}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

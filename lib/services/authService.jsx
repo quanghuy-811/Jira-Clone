@@ -1,9 +1,9 @@
 import { axiosInstance } from "../axios";
-
+const axiosClient = axiosInstance();
 export const authService = {
   register: async (userData) => {
     try {
-      const response = await axiosInstance.post("/Users/signup", {
+      const response = await axiosClient.post("/Users/signup", {
         email: userData.email,
         passWord: userData.password,
         name: userData.name,
@@ -18,7 +18,7 @@ export const authService = {
 
   login: async (credentials) => {
     try {
-      const response = await axiosInstance.post("/Users/signin", {
+      const response = await axiosClient.post("/Users/signin", {
         email: credentials.email,
         passWord: credentials.password,
       });
@@ -30,7 +30,7 @@ export const authService = {
   },
 
   getProfile: async () => {
-    const response = await axiosInstance.get("/Users/getUser");
+    const response = await axiosClient.get("/Users/getUser");
     console.log("Profile API Response:", response.data);
     return response.data.content; // Adjust based on your API response structure
   },
