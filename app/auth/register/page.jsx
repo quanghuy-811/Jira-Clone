@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { loginSuccess } from "@/store/slices/authSlice";
 import { authService } from "@/lib/services/authService";
+import Cookies from "js-cookie";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -35,8 +36,8 @@ export default function RegisterPage() {
         password: formData.password,
       });
 
-      localStorage.setItem("accessToken", loginResponse.content.accessToken);
-      localStorage.setItem("userData", JSON.stringify(loginResponse.content));
+      Cookies.set("accessToken", loginResponse.content.accessToken);
+      Cookies.set("userData", JSON.stringify(loginResponse.content));
 
       dispatch(
         loginSuccess({

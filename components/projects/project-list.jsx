@@ -22,6 +22,14 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { projectService } from "@/lib/services/projectService";
 import { AddMemberDialog } from "../add-member-dialog";
+import { useRouter } from "next/navigation";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import Link from "next/link";
 
 export function ProjectList() {
   const [projects, setProjects] = useState([]);
@@ -30,10 +38,7 @@ export function ProjectList() {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const currentUser = useSelector((state) => state.auth.user);
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  const router = useRouter();
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -50,6 +55,8 @@ export function ProjectList() {
   const handleDeleteProject = async (projectId) => {
     try {
       await projectService.deleteProject(projectId);
+      console.log(projectId);
+
       fetchProjects();
     } catch (error) {
       console.error("Failed to delete project:", error);
@@ -108,6 +115,10 @@ export function ProjectList() {
     </Table>
   );
 
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
   return (
     <div className="space-y-4">
       <div className="relative">
@@ -136,9 +147,19 @@ export function ProjectList() {
           </TableHeader>
           <TableBody>
             {filteredProjects.map((project) => (
-              <TableRow key={project.id}>
+              <TableRow
+                className="hover:bg-gray-200 transition-all duration-300"
+                key={project.id}
+              >
                 <TableCell>{project.id}</TableCell>
-                <TableCell>{project.projectName}</TableCell>
+                <TableCell>
+                  <Link
+                    className="hover:underline"
+                    href={`/dashboard/projects/${project.id}/broad`}
+                  >
+                    {project.projectName}
+                  </Link>
+                </TableCell>
                 <TableCell>{project.categoryName}</TableCell>
                 <TableCell>{project.creator?.name}</TableCell>
                 <TableCell>
@@ -161,7 +182,9 @@ export function ProjectList() {
                       <DropdownMenuContent>
                         <DropdownMenuItem
                           onClick={() =>
-                            (window.location.href = `/dashboard/projects/edit/${project.id}`)
+                            router.push(
+                              `/dashboard/projects/${project.id}/edit`
+                            )
                           }
                         >
                           Edit Project
@@ -175,9 +198,25 @@ export function ProjectList() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : (
-                    <Button variant="ghost" size="sm" disabled>
-                      •••
-                    </Button>
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="inline-block">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              disabled
+                              className="cursor-not-allowed opacity-50"
+                            >
+                              •••
+                            </Button>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          You are not the owner of this project
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   )}
                 </TableCell>
               </TableRow>

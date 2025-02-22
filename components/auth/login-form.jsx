@@ -8,6 +8,7 @@ import { Input } from "../ui/input";
 import { Card, CardHeader, CardContent } from "../ui/card";
 import { loginSuccess } from "@/store/slices/authSlice";
 import { authService } from "@/lib/services/authService";
+import { setCookies } from "@/lib/utils";
 
 export function LoginForm() {
   const router = useRouter();
@@ -27,8 +28,8 @@ export function LoginForm() {
     try {
       const response = await authService.login(formData);
 
-      localStorage.setItem("accessToken", response.content.accessToken);
-      localStorage.setItem("userData", JSON.stringify(response.content));
+      setCookies("accessToken", response.content.accessToken);
+      setCookies("userData", response.content);
 
       dispatch(
         loginSuccess({
@@ -37,7 +38,7 @@ export function LoginForm() {
         })
       );
 
-      window.location.href = "/dashboard/projects";
+      router.push("/dashboard/projects");
     } catch (error) {
       setError(error.response?.data?.message || "Login failed");
     } finally {
