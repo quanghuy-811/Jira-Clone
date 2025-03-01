@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Table,
   TableBody,
@@ -30,41 +30,36 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import Link from "next/link";
+import { fetchProject } from "@/store/slices/projectSlice";
+import { getAllUsers } from "@/store/slices/userSlice";
+import { toast } from "sonner";
 
 export function ProjectList() {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [projects, setProjects] = useState([]);
+  // const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [project, setProject] = useState({});
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const currentUser = useSelector((state) => state.auth.user);
-  const router = useRouter();
+  const { projectList, loading } = useSelector((state) => state.projects);
 
-  const fetchProjects = async () => {
-    setLoading(true);
-    try {
-      const response = await projectService.getAllProjects();
-      setProjects(response.content);
-    } catch (error) {
-      console.error("Failed to fetch projects:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleDeleteProject = async (projectId) => {
     try {
       await projectService.deleteProject(projectId);
-      console.log(projectId);
 
-      fetchProjects();
+      dispatch(fetchProject());
+
+      toast.success("Delete success");
     } catch (error) {
       console.error("Failed to delete project:", error);
     }
   };
 
-  const handleAddMember = (projectId) => {
-    setSelectedProjectId(projectId);
+  const handleAddMember = (project) => {
+    setProject(project);
     setIsAddMemberOpen(true);
   };
 
@@ -72,7 +67,7 @@ export function ProjectList() {
     return project.creator?.id === currentUser?.id;
   };
 
-  const filteredProjects = projects.filter((project) =>
+  const filteredProjects = projectList.filter((project) =>
     project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -116,7 +111,8 @@ export function ProjectList() {
   );
 
   useEffect(() => {
-    fetchProjects();
+    dispatch(getAllUsers());
+    dispatch(fetchProject());
   }, []);
 
   return (
@@ -155,7 +151,7 @@ export function ProjectList() {
                 <TableCell>
                   <Link
                     className="hover:underline"
-                    href={`/dashboard/projects/${project.id}/broad`}
+                    href={`/dashboard/projects/${project.id}/board`}
                   >
                     {project.projectName}
                   </Link>
@@ -164,9 +160,10 @@ export function ProjectList() {
                 <TableCell>{project.creator?.name}</TableCell>
                 <TableCell>
                   <Button
+                    className="hover:shadow-md"
                     variant="outline"
                     size="sm"
-                    onClick={() => handleAddMember(project.id)}
+                    onClick={() => handleAddMember(project)}
                   >
                     Members ({project.members?.length || 0})
                   </Button>
@@ -226,10 +223,10 @@ export function ProjectList() {
       )}
 
       <AddMemberDialog
-        projectId={selectedProjectId}
+        project={project}
         isOpen={isAddMemberOpen}
         onClose={() => setIsAddMemberOpen(false)}
-        onSuccess={fetchProjects}
+        // onSuccess={fetchProjects}
       />
     </div>
   );

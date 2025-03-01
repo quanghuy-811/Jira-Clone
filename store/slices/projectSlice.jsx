@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { projectService } from "@/lib/services/projectService";
+import { addMember, removedMember } from "./userSlice";
 
-export const fetchProjects = createAsyncThunk(
-  "projects/fetchProjects",
+// get all Project
+export const fetchProject = createAsyncThunk(
+  "projects/fetchProject",
   async () => {
     const response = await projectService.getAllProjects();
-    return response;
+    return response.content;
   }
 );
 
@@ -20,27 +22,45 @@ export const createProject = createAsyncThunk(
 const projectSlice = createSlice({
   name: "projects",
   initialState: {
-    projects: [],
+    projectList: [],
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProjects.pending, (state) => {
+      .addCase(fetchProject.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchProjects.fulfilled, (state, action) => {
+      .addCase(fetchProject.fulfilled, (state, action) => {
         state.loading = false;
-        state.projects = action.payload;
+        state.projectList = action.payload;
         state.error = null;
       })
-      .addCase(fetchProjects.rejected, (state, action) => {
+      .addCase(fetchProject.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
       .addCase(createProject.fulfilled, (state, action) => {
-        state.projects.push(action.payload);
+        state.projectList.push(action.payload);
+      })
+      .addCase(addMember.fulfilled, (state, action) => {
+        const project = state.projectList.find(
+          (p) => p.id === action.meta.arg.projectId
+        );
+        if (project) {
+          project.members.push(action.payload); // Thêm thành viên vào danh sách
+        }
+      })
+      .addCase(removedMember.fulfilled, (state, action) => {
+        const project = state.projectList.find(
+          (p) => p.id === action.meta.arg.projectId
+        );
+        if (project) {
+          project.members = project.members.filter(
+            (m) => m.userId !== action.payload.userId
+          );
+        }
       });
   },
 });

@@ -17,10 +17,7 @@ export const projectService = {
   },
 
   getProjectById: async (id) => {
-    //const interseterServer = axiosInstance(ctx); // Truyền ctx khi gọi trên server
-    const response = await axiosInstance().get(
-      `/Project/getProjectDetail?id=${id}`
-    );
+    const response = await interseter.get(`/Project/getProjectDetail?id=${id}`);
     return response.data;
   },
 
@@ -41,15 +38,6 @@ export const projectService = {
     const response = await interseter.delete(
       `/Project/deleteProject?projectId=${projectId}`
     );
-    return response.data;
-  },
-
-  // User Management
-  assignUserToProject: async (projectId, userId) => {
-    const response = await interseter.post("/Project/assignUserProject", {
-      projectId,
-      userId,
-    });
     return response.data;
   },
 

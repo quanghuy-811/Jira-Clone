@@ -22,6 +22,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function CreateProjectPage() {
   const router = useRouter();
@@ -52,9 +53,11 @@ export default function CreateProjectPage() {
 
     try {
       await projectService.createProject(formData);
-      window.location.href = "/dashboard/projects";
+      toast.success("Create Success");
+      router.push("/dashboard/projects");
     } catch (error) {
-      console.error("Failed to create project:", error);
+      console.log(error);
+      toast.error("Failed to create project:");
     } finally {
       setLoading(false);
     }

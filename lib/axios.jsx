@@ -33,7 +33,7 @@ export const axiosInstance = () => {
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
-      console.log(error);
+      // console.log(error);
 
       if (error.response?.status === 401) {
         // localStorage.removeItem("accessToken");
