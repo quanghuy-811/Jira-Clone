@@ -31,12 +31,9 @@ import {
 } from "../ui/tooltip";
 import Link from "next/link";
 import { fetchProject } from "@/store/slices/projectSlice";
-import { getAllUsers } from "@/store/slices/userSlice";
 import { toast } from "sonner";
 
 export function ProjectList() {
-  // const [projects, setProjects] = useState([]);
-  // const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [project, setProject] = useState({});
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
@@ -111,7 +108,6 @@ export function ProjectList() {
   );
 
   useEffect(() => {
-    dispatch(getAllUsers());
     dispatch(fetchProject());
   }, []);
 
@@ -226,7 +222,6 @@ export function ProjectList() {
         project={project}
         isOpen={isAddMemberOpen}
         onClose={() => setIsAddMemberOpen(false)}
-        // onSuccess={fetchProjects}
       />
     </div>
   );

@@ -10,7 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { userService } from "@/lib/services/userService";
 import { ScrollArea } from "./ui/scroll-area";
 import { SelectSeparator } from "./ui/select";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,16 +19,15 @@ import {
   getAllUsers,
   getUserByProjectId,
   removedMember,
-} from "@/store/slices/userSlice";
-import { fetchProject } from "@/store/slices/projectSlice";
+} from "@/store/slices/projectDetailSlice";
 
 export function AddMemberDialog({ project, isOpen, onClose }) {
   const [searchUser, setSearchUser] = useState("");
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { allUser, loading } = useSelector((state) => state.user.listUser);
-  const { detail, loadingDetailUser, errorDetailUser } = useSelector(
-    (state) => state.user.detailUser
+  const { allUser } = useSelector((state) => state.detailProject.listUser);
+  const { listMember, loadingListMember } = useSelector(
+    (state) => state.detailProject.membersInProject
   );
 
   // add member
@@ -65,6 +63,7 @@ export function AddMemberDialog({ project, isOpen, onClose }) {
   useEffect(() => {
     if (!isOpen) return;
     setSearchUser("");
+    dispatch(getAllUsers());
     dispatch(getUserByProjectId(project.id));
   }, [isOpen]);
 
@@ -89,7 +88,7 @@ export function AddMemberDialog({ project, isOpen, onClose }) {
             onChange={(e) => setSearchUser(e.target.value)}
             required
           />
-          {loadingDetailUser ? (
+          {loadingListMember ? (
             <p className="text-center text-gray-500">Loading...</p>
           ) : (
             <div className="flex space-x-3">
@@ -149,8 +148,8 @@ export function AddMemberDialog({ project, isOpen, onClose }) {
                 </h4>
                 <ScrollArea className="h-72 rounded-md border">
                   <div className="p-4">
-                    {detail?.length > 0 ? (
-                      detail.map((item) => (
+                    {listMember?.length > 0 ? (
+                      listMember.map((item) => (
                         <div key={item.userId}>
                           <div className="text-sm">
                             <div className="flex">

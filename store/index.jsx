@@ -1,14 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import projectReducer from "./slices/projectSlice";
-import userReducer from "./slices/userSlice";
+import detailProjectReducer from "./slices/projectDetailSlice";
 import boardReducer from "./slices/boardSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     projects: projectReducer,
-    user: userReducer,
+    detailProject: detailProjectReducer,
     board: boardReducer,
   },
 });

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { projectService } from "@/lib/services/projectService";
-import { addMember, removedMember } from "./userSlice";
+import { addMember, removedMember } from "./projectDetailSlice";
 
 // get all Project
 export const fetchProject = createAsyncThunk(

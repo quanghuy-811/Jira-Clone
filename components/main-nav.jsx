@@ -66,6 +66,22 @@ export function MainNav() {
                 pathname === "/dashboard/profile" ? "text-gray-900" : ""
               }`}
             >
+              User
+            </Link>
+            <Link
+              href="/dashboard/profile"
+              className={`text-gray-600 hover:text-gray-900 font-normal text-base font-serif ${
+                pathname === "/dashboard/profile" ? "text-gray-900" : ""
+              }`}
+            >
+              Create Task
+            </Link>
+            <Link
+              href="/dashboard/profile"
+              className={`text-gray-600 hover:text-gray-900 font-normal text-base font-serif ${
+                pathname === "/dashboard/profile" ? "text-gray-900" : ""
+              }`}
+            >
               Profile
             </Link>
           </div>

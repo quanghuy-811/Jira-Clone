@@ -1,14 +1,29 @@
 import { boardService } from "@/lib/services/broadService";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export const getTaskDetail = createAsyncThunk(
   "board/getTaskDetail",
-  async (taskId) => {
+  async ({ taskId }) => {
     try {
       const response = await boardService.getTaskDetail(taskId);
+
+      return response.content;
+    } catch (error) {}
+  }
+);
+
+export const updateDescription = createAsyncThunk(
+  "board/updateDescription",
+  async ({ taskId, description }, { rejectWithValue }) => {
+    try {
+      const response = await boardService.updateDescription(
+        taskId,
+        description
+      );
+
       return response.content;
     } catch (error) {
-      console.log(error);
+      return rejectWithValue(error.response?.data || "Something went wrong");
     }
   }
 );
@@ -23,15 +38,106 @@ export const updateStatus = createAsyncThunk(
     } catch (error) {}
   }
 );
+export const updatePriority = createAsyncThunk(
+  "board/updatePriority",
+  async ({ taskId, priorityId }, { rejectWithValue }) => {
+    try {
+      const response = await boardService.updatePriority(taskId, priorityId);
+
+      return { taskId, priorityId };
+    } catch (error) {
+      console.log("error: ", error);
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+
+export const updateTask = createAsyncThunk(
+  "board/updateTask",
+  async ({ valueUpdateTask }, thunkApi) => {
+    try {
+      const response = await boardService.updateTask(valueUpdateTask);
+
+      return response.content;
+    } catch (error) {}
+  }
+);
+
+export const updateEstimate = createAsyncThunk(
+  "board/updateEstimate",
+  async ({ taskId, originalEstimate }, { rejectWithValue }) => {
+    try {
+      const response = await boardService.updateEstimate(
+        taskId,
+        originalEstimate
+      );
+
+      return response.content;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+export const updateTimeTracking = createAsyncThunk(
+  "board/updateEstimate",
+  async (
+    { taskId, timeTrackingSpent, timeTrackingRemaining },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await boardService.updateTimeTracking(
+        taskId,
+        timeTrackingSpent,
+        timeTrackingRemaining
+      );
+
+      return response.content;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+
+export const insertComment = createAsyncThunk(
+  "board/insertComment",
+  async ({ taskId, contentComment }) => {
+    try {
+      const response = await boardService.insertComment(taskId, contentComment);
+
+      return response.content;
+    } catch (error) {}
+  }
+);
+
+export const updateComment = createAsyncThunk(
+  "board/updateComment",
+  async ({ idComment, contentComment }) => {
+    try {
+      const response = await boardService.updateComment(
+        idComment,
+        contentComment
+      );
+
+      return response.content;
+    } catch (error) {}
+  }
+);
+export const deleteComment = createAsyncThunk(
+  "board/deleteComment",
+  async ({ idComment }) => {
+    try {
+      const response = await boardService.deleteComment(idComment);
+
+      return response.content;
+    } catch (error) {}
+  }
+);
 
 const boardSlice = createSlice({
   name: "board",
   initialState: {
-    taskDetail: {},
-    loading: false,
-    error: null,
+    taskDetail: null,
 
-    tasks: [],
     allStatus: [],
     allPriority: [],
     allTaskType: [],
@@ -41,63 +147,16 @@ const boardSlice = createSlice({
       state.allStatus = action.payload.allStatus;
       state.allPriority = action.payload.allPriority;
       state.allTaskType = action.payload.allTaskType;
-      state.tasks = action.payload.resProjectById.lstTask;
-    },
-
-    updateStatusUI: (state, action) => {
-      const { taskId, newStatusId } = action.payload;
-
-      let movedTask = null;
-
-      //  Loại bỏ task khỏi column cũ
-      state.tasks = state.tasks.map((status) => {
-        return {
-          ...status,
-          lstTaskDeTail: status.lstTaskDeTail.filter((task) => {
-            if (task.taskId.toString() === taskId.toString()) {
-              movedTask = { ...task, statusId: newStatusId }; // Lưu task để di chuyển
-              return false; // Xóa khỏi danh sách cũ
-            }
-            return true;
-          }),
-        };
-      });
-
-      // 2️⃣ Thêm task vào column mới
-      if (movedTask) {
-        state.tasks = state.tasks.map((status) =>
-          status.statusId.toString() === newStatusId.toString()
-            ? {
-                ...status,
-                lstTaskDeTail: [...status.lstTaskDeTail, movedTask],
-              }
-            : status
-        );
-      }
-      // Cập nhật taskDetail nếu nó đang mở
-      if (state.taskDetail?.taskId?.toString() === taskId.toString()) {
-        state.taskDetail.statusId = newStatusId;
-      }
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(getTaskDetail.pending, (state, action) => {
-        state.loading = true;
-      })
-      .addCase(getTaskDetail.fulfilled, (state, action) => {
-        state.loading = false;
-        state.taskDetail = action.payload;
-        state.error = null;
-      })
-      .addCase(getTaskDetail.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(updateStatus.pending, (state, action) => {});
+    builder.addCase(getTaskDetail.fulfilled, (state, action) => {
+      const { ...newData } = action.payload;
+      state.taskDetail = { ...state.taskDetail, ...newData };
+    });
   },
 });
 
-export const { setBoardData, updateStatusUI } = boardSlice.actions;
+export const { setBoardData, updateAssigneeUI } = boardSlice.actions;
 
 export default boardSlice.reducer;

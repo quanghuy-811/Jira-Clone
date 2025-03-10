@@ -1,4 +1,3 @@
-import { projectService } from "@/lib/services/projectService";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,58 +11,54 @@ import { boardService } from "@/lib/services/broadService";
 const Board = async (props) => {
   const { id } = await props.params;
 
-  try {
-    const [resProjectById, allStatus, allPriority, allTaskType] =
-      await Promise.all([
-        projectService.getProjectById(id),
+  const getBoardData = async () => {
+    try {
+      const [allStatus, allPriority, allTaskType] = await Promise.all([
         boardService.getAllStatus(),
         boardService.getAllPriority(),
         boardService.getAllTaskType(),
       ]);
-    if (!resProjectById.content) throw new Error("Không tim thấy dự án");
-    if (!allStatus.content) throw new Error("Không có dữ liệu status");
-    if (!allPriority.content) throw new Error("Không có dữ liệu Priority");
-    if (!allTaskType.content) throw new Error("Không có dữ liệu TaskType");
+      if (!allStatus.content) throw new Error("Không có dữ liệu status");
+      if (!allPriority.content) throw new Error("Không có dữ liệu Priority");
+      if (!allTaskType.content) throw new Error("Không có dữ liệu TaskType");
 
-    const boarData = {
-      resProjectById: resProjectById.content,
-      allStatus: allStatus.content,
-      allPriority: allPriority.content,
-      allTaskType: allTaskType.content,
-    };
+      return {
+        allStatus: allStatus.content,
+        allPriority: allPriority.content,
+        allTaskType: allTaskType.content,
+      };
+    } catch (error) {
+      return null;
+    }
+  };
 
-    return (
-      <div className="px-8 mx-auto">
-        <div>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <Link className="text-gray-800" href="/dashboard/projects">
-                  Projects
-                </Link>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="text-gray-800" />
-              <Link
-                className="text-gray-800"
-                href={`/dashboard/projects/${id}/broad`}
-              >
-                {boarData.resProjectById.projectName}
+  const boardData = await getBoardData();
+  return (
+    <div className="px-8 mx-auto">
+      <div>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <Link className="text-gray-800" href="/dashboard/projects">
+                Projects
               </Link>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-
-        <div className="mt-5">
-          <h1 className="text-3xl text-black font-medium">Board</h1>
-          <div className="mt-4">
-            <BoardContent boarData={boarData} />
-          </div>
-        </div>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="text-gray-800" />
+            <Link
+              className="text-gray-800"
+              href={`/dashboard/projects/${id}/broad`}
+            >
+              {/* {boardData.resProjectById.projectName} */}
+            </Link>
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
-    );
-  } catch (error) {
-    return <div className="text-center">Server Error</div>;
-  }
+
+      <div className="mt-5">
+        <BoardContent boardData={boardData} projectId={id} />
+      </div>
+    </div>
+  );
 };
 
 export default Board;
