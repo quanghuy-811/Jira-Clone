@@ -3,7 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { boardService } from "../services/broadService";
 import {
+  createTask,
   getTaskDetail,
+  removeTask,
   updateDescription,
   updateEstimate,
   updatePriority,
@@ -12,24 +14,46 @@ import {
   updateTimeTracking,
 } from "@/store/slices/boardSlice";
 import { getProjectById } from "@/store/slices/projectDetailSlice";
+import { useRouter } from "next/navigation";
 
 const useTaskAction = () => {
+  const router = useRouter();
   const { projectDetail } = useSelector((state) => state.detailProject);
   const dispatch = useDispatch();
 
-  const updateTaskAction = async ({ valueUpdateTask, taskId }) => {
-    console.log(taskId);
+  const createTaskAction = async ({ valueCreateTask, projectId, callBack }) => {
+    try {
+      await dispatch(createTask({ valueCreateTask })).unwrap();
+      dispatch(getProjectById({ projectId }));
+      if (callBack) {
+        callBack();
+      }
+    } catch (error) {
+      console.log(error);
 
+      dispatch(getProjectById({ projectId }));
+      toast.warning(error.content);
+    }
+  };
+
+  const updateTaskAction = async ({ valueUpdateTask, taskId }) => {
     try {
       await dispatch(updateTask({ valueUpdateTask })).unwrap();
       dispatch(getTaskDetail({ taskId }));
+      router.refresh();
+    } catch (error) {
+      toast.warning(error.content);
+    }
+  };
+
+  const removeTaskAction = async ({ taskId, callback }) => {
+    try {
+      await dispatch(removeTask({ taskId })).unwrap();
+      if (callback) callback();
       dispatch(getProjectById({ projectId: projectDetail.id }));
     } catch (error) {
-      if (error.statusCode === 404) {
-        toast.warning(error.content);
-        return;
-      }
-      toast.warning("Update Task failed");
+      dispatch(getProjectById({ projectId: projectDetail.id }));
+      toast.warning(error.content);
     }
   };
 
@@ -37,7 +61,7 @@ const useTaskAction = () => {
     try {
       await dispatch(updateStatus({ taskId, newStatusId })).unwrap();
       dispatch(getTaskDetail({ taskId }));
-      dispatch(getProjectById({ projectId: projectDetail.id }));
+      router.refresh();
     } catch (error) {
       toast.warning("Update Status failed");
     }
@@ -47,27 +71,28 @@ const useTaskAction = () => {
     try {
       await dispatch(updatePriority({ taskId, priorityId })).unwrap();
       dispatch(getTaskDetail({ taskId }));
-      dispatch(getProjectById({ projectId: projectDetail.id }));
+      router.refresh();
     } catch (error) {
-      if (error.statusCode === 404) {
-        toast.warning(error.content);
-        return;
-      }
-      toast.warning("Update Priority failed");
+      toast.warning(error.content);
     }
   };
 
-  const updateEstimateAction = async ({ taskId, originalEstimate }) => {
+  const updateEstimateAction = async ({
+    taskId,
+    originalEstimate,
+    callBack,
+  }) => {
     try {
       await dispatch(updateEstimate({ taskId, originalEstimate })).unwrap();
       dispatch(getTaskDetail({ taskId }));
-      dispatch(getProjectById({ projectId: projectDetail.id }));
-    } catch (error) {
-      if (error.statusCode === 404) {
-        toast.warning(error.content);
-        return;
+      router.refresh();
+
+      if (callBack) {
+        callBack();
       }
-      toast.warning("update Estimate faild");
+    } catch (error) {
+      console.log(error);
+      toast.warning(error.content);
     }
   };
   const updateTimeTrackingAction = async ({
@@ -96,17 +121,17 @@ const useTaskAction = () => {
     }
   };
 
-  const updateDescriptionAction = async ({ taskId, description }) => {
+  const updateDescriptionAction = async ({ taskId, description, callBack }) => {
     try {
       await dispatch(updateDescription({ taskId, description })).unwrap();
       dispatch(getTaskDetail({ taskId }));
-      dispatch(getProjectById({ projectId: projectDetail.id }));
-    } catch (error) {
-      if (error.statusCode === 404) {
-        toast.warning(error.content);
-        return;
+      router.refresh();
+      if (callBack) {
+        callBack();
       }
-      toast.warning("Update description failed");
+    } catch (error) {
+      console.log("error: ", error);
+      toast.warning(error.content);
     }
   };
 
@@ -117,6 +142,8 @@ const useTaskAction = () => {
     updateTimeTrackingAction,
     updateEstimateAction,
     updateDescriptionAction,
+    createTaskAction,
+    removeTaskAction,
   };
 };
 

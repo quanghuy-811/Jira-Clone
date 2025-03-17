@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { projectService } from "@/lib/services/projectService";
 import {
@@ -12,28 +12,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { fetchProject } from "@/store/slices/projectSlice";
 
 export default function ProfilePage() {
   const user = useSelector((state) => state.auth.user);
-  const [userProjects, setUserProjects] = useState([]);
+  const dispatch = useDispatch();
+  const { projectUser } = useSelector((state) => state.projects);
 
   useEffect(() => {
-    const fetchUserProjects = async () => {
-      try {
-        const response = await projectService.getAllProjects();
-        // Filter projects where user is either creator or member
-        const filteredProjects = response.content.filter(
-          (project) =>
-            project.creator?.id === user?.id ||
-            project.members?.some((member) => member.userId === user?.id)
-        );
-        setUserProjects(filteredProjects);
-      } catch (error) {
-        console.error("Failed to fetch user projects:", error);
-      }
-    };
-
-    fetchUserProjects();
+    // fetchUserProjects();
+    dispatch(fetchProject());
   }, [user?.id]);
 
   return (
@@ -41,29 +29,30 @@ export default function ProfilePage() {
       {/* User Info Card */}
       <Card>
         <CardHeader>
-          <h2 className="text-2xl font-bold">Profile Information</h2>
+          <h2 className="text-xl md:text-2xl lg:text-3xl text-black font-semibold">
+            Profile Information
+          </h2>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-500">
-                User ID
-              </label>
-              <p className="text-lg">{user?.id}</p>
+              <label className="text__lable text-gray-500">User ID</label>
+              <p className="text-base xl:text-lg">{user?.id}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-500">Name</label>
-              <p className="text-lg">{user?.name}</p>
+              <label className="text__lable text-gray-500">Email</label>
+              <p className="text-base xl:text-lg break-words">{user?.email}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-500">Email</label>
-              <p className="text-lg">{user?.email}</p>
+              <label className="text__lable text-gray-500">Name</label>
+              <p className="text-base xl:text-lg break-words">{user?.name}</p>
             </div>
+
             <div>
-              <label className="text-sm font-medium text-gray-500">
-                Phone Number
-              </label>
-              <p className="text-lg">{user?.phoneNumber || "Not provided"}</p>
+              <label className="text__lable text-gray-500">Phone Number</label>
+              <p className="text-base xl:text-lg break-words">
+                {user?.phoneNumber || "Not provided"}
+              </p>
             </div>
           </div>
         </CardContent>
@@ -72,7 +61,9 @@ export default function ProfilePage() {
       {/* User Projects Card */}
       <Card>
         <CardHeader>
-          <h2 className="text-2xl font-bold">My Projects</h2>
+          <h2 className="text-xl md:text-2xl lg:text-3xl text-black font-semibold">
+            My Projects
+          </h2>
         </CardHeader>
         <CardContent>
           <Table>
@@ -80,24 +71,23 @@ export default function ProfilePage() {
               <TableRow>
                 <TableHead>Project Name</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Members</TableHead>
+                <TableHead className="hidden sm:table-cell">Members</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {userProjects.map((project) => (
+              {projectUser?.map((project) => (
                 <TableRow key={project.id}>
                   <TableCell>{project.projectName}</TableCell>
                   <TableCell>{project.categoryName}</TableCell>
-                  <TableCell>
-                    {project.creator?.id === user?.id ? "Creator" : "Member"}
+
+                  <TableCell className="hidden sm:table-cell">
+                    {project.members?.length || 0}
                   </TableCell>
-                  <TableCell>{project.members?.length || 0}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-          {userProjects.length === 0 && (
+          {projectUser?.length === 0 && (
             <p className="text-center text-gray-500 py-4">
               You haven't joined any projects yet.
             </p>

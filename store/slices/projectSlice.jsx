@@ -5,9 +5,15 @@ import { addMember, removedMember } from "./projectDetailSlice";
 // get all Project
 export const fetchProject = createAsyncThunk(
   "projects/fetchProject",
-  async () => {
-    const response = await projectService.getAllProjects();
-    return response.content;
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState();
+
+      const response = await projectService.getAllProjects();
+      return { response: response.content, user: auth?.user?.id };
+    } catch (error) {
+      console.log(error);
+    }
   }
 );
 
@@ -22,6 +28,7 @@ export const createProject = createAsyncThunk(
 const projectSlice = createSlice({
   name: "projects",
   initialState: {
+    projectUser: null,
     projectList: [],
     loading: false,
     error: null,
@@ -33,8 +40,12 @@ const projectSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchProject.fulfilled, (state, action) => {
+        const { response, user } = action.payload;
         state.loading = false;
-        state.projectList = action.payload;
+        state.projectList = response;
+        state.projectUser = state.projectList.filter(
+          (project) => project.creator.id === user
+        );
         state.error = null;
       })
       .addCase(fetchProject.rejected, (state, action) => {

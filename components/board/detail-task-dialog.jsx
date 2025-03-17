@@ -1,16 +1,6 @@
 "use client";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  getTaskDetail,
-  updatePriority,
-  updateStatus,
-  updateTask,
-} from "@/store/slices/boardSlice";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { getTaskDetail } from "@/store/slices/boardSlice";
 import React, { memo, useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 
@@ -21,28 +11,39 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "../ui/select";
 
-import Assignees from "./board/taskAssignees";
 import { toast } from "sonner";
 import { getProjectById } from "@/store/slices/projectDetailSlice";
-import TaskTypeBadge from "./board/taskTypeBadge";
-import TaskComment from "./board/taskComment";
-import { ScrollArea } from "./ui/scroll-area";
-import TaskDescription from "./board/taskDescription";
-import TaskEstimate from "./board/taskEstimate";
-import TaskTimeTracking from "./board/taskTimeTracking";
+// import TaskTypeBadge from "./board/taskTypeBadge";
+// import TaskComment from "./board/taskComment";
+import { ScrollArea } from "../ui/scroll-area";
+
 import useTaskAction from "@/lib/hook/useTaskAction";
+import { Trash, X } from "lucide-react";
+
+import TaskAssignees from "./taskAssignees";
+import TaskDescription from "./taskDescription";
+import TaskComment from "./taskComment";
+import TaskEstimate from "./taskEstimate";
+import TaskTimeTracking from "./taskTimeTracking";
+import TaskTypeBadge from "./taskTypeBadge";
+import { Button } from "../ui/button";
 
 const DetailTaskDialog = ({ isOpen, onClose, taskId }) => {
-  const { updateTaskAction, updateStatusAction, updatePriorityAction } =
-    useTaskAction();
+  const {
+    updateTaskAction,
+    updateStatusAction,
+    updatePriorityAction,
+    removeTaskAction,
+  } = useTaskAction();
   const { allStatus, allPriority, allTaskType, taskDetail } = useSelector(
     (state) => state.board,
     shallowEqual
   );
   const dispatch = useDispatch();
 
+  //
   useEffect(() => {
     if (!taskId || !isOpen) return;
 
@@ -71,16 +72,23 @@ const DetailTaskDialog = ({ isOpen, onClose, taskId }) => {
     updatePriorityAction({ taskId, priorityId: value });
   };
 
+  // Remove Task
+  const handleRemoveTask = (taskId) => {
+    removeTaskAction({ taskId, callback: () => onClose() });
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent aria-describedby={null} className="max-w-6xl">
+      <DialogContent
+        aria-describedby={null}
+        className="h-[650px] lg:h-auto overflow-y-auto sm:overflow-auto"
+      >
         <DialogTitle className="sr-only">Task Details</DialogTitle>
         {!taskDetail ? (
           <div>Loading...</div>
         ) : (
           <div>
             {/* Tasktype */}
-            <div>
+            <div className="flex items-end justify-between">
               <Select
                 value={taskDetail?.taskTypeDetail?.id}
                 onValueChange={(value) => {
@@ -109,9 +117,23 @@ const DetailTaskDialog = ({ isOpen, onClose, taskId }) => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
+
+              <div className="h-full flex items-center space-x-4">
+                <Button
+                  onClick={() => handleRemoveTask(taskDetail.taskId)}
+                  variant="ghost"
+                  size="icon"
+                >
+                  <Trash />
+                </Button>
+
+                <Button onClick={onClose} variant="ghost" size="icon">
+                  <X />
+                </Button>
+              </div>
             </div>
-            <div className="flex space-x-7 mt-3">
-              <div className="w-6/12 ">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-3">
+              <div className="">
                 <ScrollArea className="h-96 pr-7">
                   <div className="space-y-6">
                     <h2 className="text-xl mb-4 font-semibold">
@@ -126,7 +148,7 @@ const DetailTaskDialog = ({ isOpen, onClose, taskId }) => {
                   </div>
                 </ScrollArea>
               </div>
-              <div className="w-6/12 space-y-6">
+              <div className="space-y-6">
                 {/* Status */}
                 <Select
                   value={taskDetail?.statusId}
@@ -134,7 +156,7 @@ const DetailTaskDialog = ({ isOpen, onClose, taskId }) => {
                     onChangeSelectStatus(value);
                   }}
                 >
-                  <SelectTrigger className="w-1/2 rounded-sm text-xs font-semibold border-gray-300 bg-blue-100 hover:bg-blue-200">
+                  <SelectTrigger className="w-2/3 rounded-sm text-xs font-semibold border-gray-300 bg-blue-100 hover:bg-blue-200">
                     <SelectValue></SelectValue>
                   </SelectTrigger>
                   <SelectContent>
@@ -155,19 +177,19 @@ const DetailTaskDialog = ({ isOpen, onClose, taskId }) => {
                 </Select>
 
                 {/*Assignee  */}
-                <Assignees taskId={taskId} />
+                <TaskAssignees taskId={taskId} />
 
                 {/* Priority*/}
-                <div className="flex items-center justify-between">
-                  <div className="w-2/12 text-sm font-semibold ">Priority</div>
-                  <div className="w-9/12 ">
+                <div className="grid grid-cols-1 md:grid-cols-4 items-center">
+                  <div className=" text-sm font-semibold ">Priority</div>
+                  <div className="md:col-span-3 mt-3 md:mt-0">
                     <Select
                       value={taskDetail?.priorityTask?.priorityId}
                       onValueChange={(value) => {
                         onChangeSelectPriority(value);
                       }}
                     >
-                      <SelectTrigger className="w-full [&>svg]:hidden focus:ring-0 focus:outline-none rounded-sm border-none  hover:bg-gray-200">
+                      <SelectTrigger className="w-full [&>svg]:hidden focus:ring-0 focus:outline-none rounded-sm border-none bg-gray-100 md:bg-transparent  hover:bg-gray-200">
                         <SelectValue></SelectValue>
                       </SelectTrigger>
                       <SelectContent>

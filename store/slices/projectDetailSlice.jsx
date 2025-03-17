@@ -24,9 +24,11 @@ export const getProjectById = createAsyncThunk(
 // get user by id
 export const getUserByProjectId = createAsyncThunk(
   "projectDetail/getUserByProjectId",
-  async (projectId, thunkAPI) => {
+  async ({ projectId }, thunkAPI) => {
     try {
       const response = await userService.getUserByProjectId(projectId);
+      console.log(response);
+
       return response.content;
     } catch (error) {
       return thunkAPI.rejectWithValue({
@@ -86,6 +88,9 @@ const projectDetailSlice = createSlice({
     },
   },
   reducers: {
+    setProjectDetail: (state, action) => {
+      state.projectDetail = { ...action.payload };
+    },
     updateStatusUI: (state, action) => {
       const { taskId, newStatusId } = action.payload;
 
@@ -118,6 +123,22 @@ const projectDetailSlice = createSlice({
         });
       }
     },
+    setMemberInProject: (state, action) => {
+      const itemUser = action.payload;
+
+      const findUser = state.membersInProject.listMember.find(
+        (item) => item.userId === itemUser.userId
+      );
+
+      if (findUser) {
+        state.membersInProject.listMember =
+          state.membersInProject.listMember.filter(
+            (member) => member.userId !== itemUser.userId
+          );
+      } else {
+        state.membersInProject.listMember.push(itemUser);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -136,6 +157,7 @@ const projectDetailSlice = createSlice({
       // get Project by Id
       .addCase(getProjectById.fulfilled, (state, action) => {
         const { ...newDataProjectDetail } = action.payload;
+
         state.projectDetail = {
           ...state.projectDetail,
           ...newDataProjectDetail,
@@ -159,19 +181,10 @@ const projectDetailSlice = createSlice({
           state.membersInProject.detail = [];
         }
         state.membersInProject.errorListMember = action.payload?.message;
-      })
-      // Add thành công cập nhật lại state
-      .addCase(addMember.fulfilled, (state, action) => {
-        state.membersInProject.listMember.push(action.payload);
-      })
-      .addCase(removedMember.fulfilled, (state, action) => {
-        state.membersInProject.listMember =
-          state.membersInProject.listMember.filter(
-            (item) => item.userId !== action.payload.userId
-          );
       });
   },
 });
-export const { updateStatusUI } = projectDetailSlice.actions;
+export const { updateStatusUI, setProjectDetail, setMemberInProject } =
+  projectDetailSlice.actions;
 
 export default projectDetailSlice.reducer;

@@ -26,7 +26,7 @@ const TaskTimeTracking = () => {
       timeTrackingSpent: Number(taskDetail?.timeTrackingSpent) || 0,
       timeTrackingRemaining: Number(taskDetail?.timeTrackingRemaining) || 0,
     }));
-  }, [taskDetail]);
+  }, [taskDetail, openTimeTracking]);
 
   const handleUpdateTimeTracking = () => {
     updateTimeTrackingAction({
@@ -38,103 +38,109 @@ const TaskTimeTracking = () => {
   };
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="w-2/12 text-sm font-semibold ">Time tracking</div>
-      <div className="w-9/12 ">
+    <div className="grid grid-cols-1 md:grid-cols-4 items-center">
+      <div className="text-sm font-semibold ">Time tracking</div>
+      <div className="md:col-span-3 mt-3 md:mt-0 ">
         <div
           onClick={() => setOpenTimeTracking(true)}
           className="hover:bg-gray-200 p-1.5 rounded-sm w-full flex-col"
         >
           <Progress
             value={
-              (valueTime.timeTrackingSpent / taskDetail?.originalEstimate) * 100
+              (taskDetail?.timeTrackingSpent / taskDetail?.originalEstimate) *
+              100
             }
             className="h-2 bg-gray-300 w-full"
           />
           <div className="flex justify-between text-sm text-gray-600 mt-2">
-            <span>{valueTime.timeTrackingSpent}m logged</span>
-            <span>{valueTime.timeTrackingRemaining}m remaining</span>
+            <span>{taskDetail?.timeTrackingSpent}m logged</span>
+            <span>{taskDetail?.timeTrackingRemaining}m remaining</span>
           </div>
         </div>
-        <Dialog
-          className="hide-close"
-          open={openTimeTracking}
-          onOpenChange={setOpenTimeTracking}
-        >
-          <DialogContent aria-describedby={null}>
-            <DialogTitle className="sr-only">timeTracking</DialogTitle>
-            <div className="p-2 space-y-3 mt-5">
-              <Progress
-                value={
-                  (valueTime.timeTrackingSpent / taskDetail?.originalEstimate) *
-                  100
-                }
-                className="h-2 bg-gray-300 w-full"
-              />
-              <div className="flex justify-between text-sm text-gray-600 mt-2">
-                <span>{valueTime.timeTrackingSpent}m logged</span>
-                <span>{valueTime.timeTrackingRemaining}m remaining</span>
-              </div>
-
-              <p className="text-sm text-gray-600">
-                The original estimate for this issue was
-                {/* {taskDetail.originalEstimate} */}
-                <Badge className=" pointer-events-none bg-gray-300 text-gray-800 ml-1 p-1">
-                  {taskDetail.originalEstimate}m
-                </Badge>
-              </p>
-
-              <div className="flex items-center justify-between ">
-                <div>
-                  <Label htmlFor="spent">Time spent</Label>
-                  <Input
-                    id="timeTrackingSpent"
-                    value={valueTime.timeTrackingSpent}
-                    className="col-span-2 h-8"
-                    onChange={(e) => {
-                      setValueTime((prev) => ({
-                        ...prev,
-                        [e.target.id]: e.target.value,
-                      }));
-                    }}
-                  />
+        {openTimeTracking && (
+          <Dialog
+            className="hide-close"
+            open={openTimeTracking}
+            onOpenChange={setOpenTimeTracking}
+          >
+            <DialogContent aria-describedby={null}>
+              <DialogTitle className="sr-only">timeTracking</DialogTitle>
+              <div className="p-2 space-y-3 mt-5">
+                <Progress
+                  value={
+                    (valueTime.timeTrackingSpent /
+                      taskDetail?.originalEstimate) *
+                    100
+                  }
+                  className="h-2 bg-gray-300 w-full"
+                />
+                <div className="flex justify-between text-sm text-gray-600 mt-2">
+                  <span>{valueTime.timeTrackingSpent}m logged</span>
+                  <span>{valueTime.timeTrackingRemaining}m remaining</span>
                 </div>
-                <div>
-                  <Label htmlFor="remaining">Time remaining</Label>
-                  <Input
-                    id="timeTrackingRemaining"
-                    value={valueTime.timeTrackingRemaining ?? ""}
-                    className="col-span-2 h-8 !opacity-100 !cursor-text"
-                    onChange={(e) => {
-                      setValueTime((prev) => ({
-                        ...prev,
-                        [e.target.id]: e.target.value,
-                      }));
+
+                <p className="text-sm text-gray-600">
+                  The original estimate for this issue was
+                  {/* {taskDetail.originalEstimate} */}
+                  <Badge className=" pointer-events-none bg-gray-300 text-gray-800 ml-1 p-1">
+                    {taskDetail.originalEstimate}m
+                  </Badge>
+                </p>
+
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <Label htmlFor="spent">Time spent</Label>
+                    <Input
+                      id="timeTrackingSpent"
+                      value={valueTime.timeTrackingSpent}
+                      className="col-span-2 h-8"
+                      onChange={(e) => {
+                        setValueTime((prev) => ({
+                          ...prev,
+                          [e.target.id]: e.target.value,
+                        }));
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="remaining">Time remaining</Label>
+                    <Input
+                      id="timeTrackingRemaining"
+                      value={valueTime.timeTrackingRemaining ?? ""}
+                      className="col-span-2 h-8 !opacity-100 !cursor-text"
+                      onChange={(e) => {
+                        setValueTime((prev) => ({
+                          ...prev,
+                          [e.target.id]: e.target.value,
+                        }));
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="space-x-2 flex justify-end">
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      handleUpdateTimeTracking();
                     }}
-                  />
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    className="hover:text-red-500"
+                    variant="ghost"
+                    onClick={() => {
+                      setOpenTimeTracking(false);
+                    }}
+                    size="sm"
+                  >
+                    Cancel
+                  </Button>
                 </div>
               </div>
-              <div className="space-x-2 flex justify-end">
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    handleUpdateTimeTracking();
-                  }}
-                >
-                  Save
-                </Button>
-                <Button
-                  className="hover:text-red-500"
-                  variant="ghost"
-                  onClick={() => setOpenTimeTracking(false)}
-                  size="sm"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );

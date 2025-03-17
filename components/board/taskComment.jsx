@@ -1,33 +1,20 @@
 import React, { useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Button } from "../ui/button";
-import { SelectSeparator } from "../ui/select";
-import { ScrollArea } from "../ui/scroll-area";
 import { Textarea } from "../ui/textarea";
-import {
-  deleteComment,
-  getTaskDetail,
-  insertComment,
-  updateComment,
-} from "@/store/slices/boardSlice";
-import { getProjectById } from "@/store/slices/projectDetailSlice";
-import { Input } from "../ui/input";
-import { toast } from "sonner";
+
 import useCommentAction from "@/lib/hook/useCommentAction";
 
 const TaskComment = ({ taskId }) => {
   const { taskDetail } = useSelector((state) => state.board, shallowEqual);
-  const { projectDetail } = useSelector((state) => state.detailProject);
   const { user } = useSelector((state) => state.auth);
 
   const [editCommentId, setEditComentId] = useState(null);
   const [isComment, setIsComment] = useState(false);
-  const dispatch = useDispatch();
   const { editComment, addComment, delComment } = useCommentAction();
   const commentRefs = useRef({});
   const commentRefAdd = useRef(null);
 
-  console.log(taskDetail);
   const handleEditComment = (idComment) => {
     editComment({
       idComment,
@@ -53,19 +40,19 @@ const TaskComment = ({ taskId }) => {
   };
   return (
     <div className="space-y-5">
-      <div className="w-2/12 text-sm font-semibold ">Comment</div>
+      <div className="text-sm font-semibold ">Comment</div>
 
-      <div className="flex space-x-3">
-        <div className="w-1/12">
+      <div className="grid grid-cols-12 gap-2 items-center">
+        <div className="col-span-1">
           {user?.avatar ? (
-            <img className=" h-8 w-8 rounded-full" src={user?.avatar} alt="" />
+            <img className="icon__board" src={user?.avatar} alt="" />
           ) : (
-            <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center text-sm">
+            <div className="icon__board bg-gray-300 flex items-center justify-center text-sm">
               ?
             </div>
           )}
         </div>
-        <div className="flex-1">
+        <div className="col-span-11">
           {isComment ? (
             <div>
               <Textarea

@@ -1,5 +1,5 @@
 "use server";
-import EditForm from "@/components/projects/edit-form";
+import EditForm from "@/components/projects/formEditProject";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,6 +13,7 @@ import Link from "next/link";
 
 const Edit = async (props) => {
   const { id } = await props.params;
+
   const categories = await projectService.getCategories();
   const resGetById = await projectService.getProjectById(id);
   const detail = resGetById.content;

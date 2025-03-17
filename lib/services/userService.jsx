@@ -6,6 +6,15 @@ export const userService = {
     return response.data;
   },
 
+  editUser: async (user) => {
+    const response = await interseter.put("/Users/editUser", user);
+    return response.data;
+  },
+
+  deleteUser: async (userId) => {
+    const response = await interseter.delete(`/Users/deleteUser?id=${userId}`);
+    return response.data;
+  },
   getUserByProjectId: async (projectId) => {
     const response = await interseter.get(
       `/Users/getUserByProjectId?idProject=${projectId}`

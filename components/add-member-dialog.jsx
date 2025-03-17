@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
@@ -16,185 +15,217 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkUserPermission } from "@/lib/utils";
 import {
   addMember,
-  getAllUsers,
   getUserByProjectId,
-  removedMember,
+  setMemberInProject,
 } from "@/store/slices/projectDetailSlice";
+import { useRouter } from "next/navigation";
+import { userService } from "@/lib/services/userService";
+import { X } from "lucide-react";
 
-export function AddMemberDialog({ project, isOpen, onClose }) {
-  const [searchUser, setSearchUser] = useState("");
+export function AddMemberDialog({ children, projectDetail, users }) {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchUser, setSearchUser] = useState("");
   const { user } = useSelector((state) => state.auth);
-  const { allUser } = useSelector((state) => state.detailProject.listUser);
   const { listMember, loadingListMember } = useSelector(
     (state) => state.detailProject.membersInProject
   );
 
   // add member
-  const handleAddMember = (item) => {
-    if (!checkUserPermission(user.id, project.creator.id)) {
+  const handleAddMember = async (itemUser) => {
+    if (!checkUserPermission(user.id, projectDetail.creator.id)) {
       toast.warning("User is unauthorized !!!");
       return;
     }
-    dispatch(addMember({ projectId: project.id, item }))
-      .unwrap()
-      .then(() => {
-        toast.success("Add Member Success");
-      })
-      .catch((error) => {
-        toast.warning(error || "Failed");
-      });
+    try {
+      await userService.assignUserToProject(projectDetail.id, itemUser.userId);
+      dispatch(setMemberInProject(itemUser));
+      toast.success("Add Success");
+      router.refresh();
+    } catch (error) {
+      toast.warning(error.response?.data?.content || "Add member failed");
+    }
   };
   // remove member
-  const handleRemoveMember = async (item) => {
-    if (!checkUserPermission(user.id, project.creator.id)) {
+  const handleRemoveMember = async (itemUser) => {
+    if (!checkUserPermission(user.id, projectDetail.creator.id)) {
       toast.warning("User is unauthorized !!!");
       return;
     }
-    dispatch(removedMember({ projectId: project.id, item }))
-      .unwrap()
-      .then(() => {
-        toast.success("Remove Success");
-      })
-      .catch((error) => {
-        toast.warning(error || "Failed");
-      });
+    try {
+      await userService.removeUserFromProject(
+        projectDetail.id,
+        itemUser.userId
+      );
+      dispatch(setMemberInProject(itemUser));
+      toast.success("Remove Success");
+      router.refresh();
+    } catch (error) {
+      toast.warning(error.response?.data?.content || "Remove member failed");
+    }
   };
   useEffect(() => {
+    // console.log("Dialog open state:", isOpen);
+
     if (!isOpen) return;
     setSearchUser("");
-    dispatch(getAllUsers());
-    dispatch(getUserByProjectId(project.id));
+    dispatch(getUserByProjectId({ projectId: projectDetail.id }));
   }, [isOpen]);
 
   const filteredUsers = useMemo(() => {
-    if (!searchUser.trim()) return allUser;
+    if (!searchUser.trim()) return users;
 
-    return allUser.filter((item) => {
+    return users.filter((item) => {
       return item.name.toLowerCase().includes(searchUser.toLowerCase());
     });
-  }, [allUser, searchUser]);
+  }, [users, searchUser]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent aria-describedby={null} className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>Add Member to Project</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          <Input
-            placeholder="Enter search user name"
-            value={searchUser}
-            onChange={(e) => setSearchUser(e.target.value)}
-            required
-          />
-          {loadingListMember ? (
-            <p className="text-center text-gray-500">Loading...</p>
-          ) : (
-            <div className="flex space-x-3">
-              <div className="w-1/2 ">
-                <h4 className="mb-4 text-base font-semibold leading-none">
-                  Not yet added
-                </h4>
-                <ScrollArea className="h-72 rounded-md border">
-                  <div className="p-4">
-                    {filteredUsers?.length > 0 ? (
-                      filteredUsers.map((item) => (
-                        <div key={item.userId}>
-                          <div className="text-sm">
-                            <div className="flex">
-                              <div className="w-2/12">
-                                <img
-                                  className="w-10 h-10 rounded-full"
-                                  src={
-                                    item.avatar
-                                      ? item.avatar
-                                      : "/static/user-icon.png"
-                                  }
-                                  alt="img"
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <p>{item.name}</p>
-                                <p className="text-xs text-gray-400">
-                                  ID: {item.userId}
-                                </p>
-                              </div>
-                              <div className="w-2/12">
-                                <Button
-                                  onClick={() => {
-                                    handleAddMember(item);
-                                  }}
-                                >
-                                  Add
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                          <SelectSeparator className="my-2" />
-                        </div>
-                      ))
-                    ) : (
-                      <>
-                        <p>No data</p>
-                      </>
-                    )}
-                  </div>
-                </ScrollArea>
-              </div>
-              <div className="w-1/2 ">
-                <h4 className="mb-4 text-base font-semibold leading-none">
-                  Already in project
-                </h4>
-                <ScrollArea className="h-72 rounded-md border">
-                  <div className="p-4">
-                    {listMember?.length > 0 ? (
-                      listMember.map((item) => (
-                        <div key={item.userId}>
-                          <div className="text-sm">
-                            <div className="flex">
-                              <div className="w-2/12">
-                                <img
-                                  className="w-10 h-10 rounded-full"
-                                  src={
-                                    item.avatar
-                                      ? item.avatar
-                                      : "/static/user-icon.png"
-                                  }
-                                  alt="img"
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <p>{item.name}</p>
-                                <p className="text-xs text-gray-400">
-                                  ID: {item.userId}
-                                </p>
-                              </div>
-                              <div className="w-3/12">
-                                <Button
-                                  onClick={() => {
-                                    handleRemoveMember(item);
-                                  }}
-                                  variant="destructive"
-                                >
-                                  Remove
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                          <SelectSeparator className="my-2" />
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-center text-gray-500">No member</p>
-                    )}
-                  </div>
-                </ScrollArea>
-              </div>
+    <div>
+      {children(() => setIsOpen(true))}
+      {/* Dialog add member */}
+      {isOpen && (
+        <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
+          <DialogContent
+            aria-describedby={null}
+            className=" h-[450px] sm:h-auto overflow-y-auto sm:overflow-auto"
+          >
+            <div className="flex justify-between items-center">
+              <DialogTitle>Add Member to Project</DialogTitle>
+
+              <Button
+                className="btn"
+                onClick={() => setIsOpen(false)}
+                variant="ghost"
+                size="icon"
+              >
+                <X />
+              </Button>
             </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+            <div className="space-y-4">
+              <Input
+                className="h-7 md:h-9 w-full"
+                placeholder="Enter search user name"
+                value={searchUser}
+                onChange={(e) => setSearchUser(e.target.value)}
+                required
+              />
+
+              {loadingListMember ? (
+                <p className="text-center text-gray-500">Loading...</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-2">
+                  <div>
+                    <h4 className="mb-4 text-sm md:text-base  font-semibold leading-none">
+                      Not yet added
+                    </h4>
+                    <ScrollArea className="h-56 md:h-72 rounded-md border flex-shrink">
+                      <div className="p-2 md:p-4">
+                        {filteredUsers?.length > 0 ? (
+                          filteredUsers.map((item) => (
+                            <div key={item.userId}>
+                              <div className="text-xs md:text-sm">
+                                <div className="flex items-center justify-between flex-wrap">
+                                  <div className="flex items-center space-x-3">
+                                    <img
+                                      className="icon"
+                                      src={
+                                        item.avatar
+                                          ? item.avatar
+                                          : "/static/user-icon.png"
+                                      }
+                                      alt="img"
+                                    />
+                                    <div className="flex-1">
+                                      <p className="text-xs md:text-sm break-words">
+                                        {item.name}
+                                      </p>
+                                      <p className="text-xs text-gray-400">
+                                        ID: {item.userId}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  <Button
+                                    className="btn"
+                                    onClick={() => {
+                                      handleAddMember(item);
+                                    }}
+                                  >
+                                    Add
+                                  </Button>
+                                </div>
+                              </div>
+                              <SelectSeparator className="my-2" />
+                            </div>
+                          ))
+                        ) : (
+                          <>
+                            <p>No data</p>
+                          </>
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                  <div>
+                    <h4 className="mb-4 text-sm md:text-base font-semibold leading-none">
+                      Already in project
+                    </h4>
+                    <ScrollArea className="h-56 md:h-72 rounded-md border">
+                      <div className="p-2 md:p-4">
+                        {listMember?.length > 0 ? (
+                          listMember.map((item) => (
+                            <div key={item.userId}>
+                              <div className="text-sm">
+                                <div className="flex items-center justify-between flex-wrap">
+                                  <div className="flex space-x-2 ">
+                                    <img
+                                      className="icon"
+                                      src={
+                                        item.avatar
+                                          ? item.avatar
+                                          : "/static/user-icon.png"
+                                      }
+                                      alt="img"
+                                    />
+
+                                    <div>
+                                      <p className="text-xs md:text-sm break-words">
+                                        {item.name}
+                                      </p>
+                                      <p className="text-xs text-gray-400">
+                                        ID: {item.userId}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  <Button
+                                    className="btn"
+                                    onClick={() => {
+                                      handleRemoveMember(item);
+                                    }}
+                                    variant="destructive"
+                                  >
+                                    Remove
+                                  </Button>
+                                </div>
+                              </div>
+                              <SelectSeparator className="my-2" />
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-center text-gray-500">No member</p>
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
   );
 }

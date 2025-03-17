@@ -1,28 +1,33 @@
 import { useEffect, useRef, useState } from "react";
-import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { useDispatch, useSelector } from "react-redux";
 import { getTaskDetail, updateDescription } from "@/store/slices/boardSlice";
-import { getProjectById } from "@/store/slices/projectDetailSlice";
+
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import useTaskAction from "@/lib/hook/useTaskAction";
 
 const TaskDescription = ({ taskId }) => {
+  const router = useRouter();
   const { taskDetail } = useSelector((state) => state.board);
-  const { projectDetail } = useSelector((state) => state.detailProject);
   const [description, setDescription] = useState(taskDetail.description || "");
-
   const [isDescription, setIsDescription] = useState(false);
   const dispatch = useDispatch();
   const { updateDescriptionAction } = useTaskAction();
 
   const handleUpdateDescription = () => {
-    updateDescriptionAction({ taskId, description: description });
+    updateDescriptionAction({
+      taskId,
+      description,
+      callBack: () => setIsDescription(false),
+    });
   };
 
   useEffect(() => {
     setDescription(taskDetail.description);
-  }, [taskDetail]);
+  }, [taskDetail.description]);
+
   return (
     <div>
       <label className="block text-sm font-semibold mb-2" htmlFor="description">
@@ -38,10 +43,6 @@ const TaskDescription = ({ taskId }) => {
             name="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            onBlur={(e) => {
-              // Nếu mất focus mà không bấm vào nút thì ẩn nút
-              setTimeout(() => setIsDescription(false), 200);
-            }}
           />
           <div className="flex justify-end gap-2 mt-2">
             <Button size="sm" onClick={() => handleUpdateDescription()}>
@@ -65,7 +66,7 @@ const TaskDescription = ({ taskId }) => {
           onClick={() => setIsDescription(true)}
         >
           <p className="text-sm text-gray-700">
-            {description || "Click to add description... "}
+            {taskDetail.description || "Click to add description... "}
           </p>
         </div>
       )}

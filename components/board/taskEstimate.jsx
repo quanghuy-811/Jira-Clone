@@ -1,50 +1,46 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Check, X } from "lucide-react";
-import {
-  getTaskDetail,
-  setTaskDetail,
-  updateEstimate,
-} from "@/store/slices/boardSlice";
-import { getProjectById } from "@/store/slices/projectDetailSlice";
 import useTaskAction from "@/lib/hook/useTaskAction";
 
 const TaskEstimate = () => {
   const { taskDetail } = useSelector((state) => state.board);
   const [isEstimate, setIsEstimate] = useState(false);
-  const [valueEstimate, setValueEstimate] = useState(0);
   const { updateEstimateAction } = useTaskAction();
+  const valueEstimateRef = useRef(0);
 
   useEffect(() => {
-    setValueEstimate(Number(taskDetail.originalEstimate) || 0);
-  }, [taskDetail?.originalEstimate]);
+    valueEstimateRef.current = Number(taskDetail.originalEstimate || 0);
+  }, [taskDetail.originalEstimate]);
 
   const handleEstimate = (isCheck) => {
-    setIsEstimate(false);
     if (isCheck) {
       updateEstimateAction({
         taskId: taskDetail.taskId,
-        originalEstimate: valueEstimate,
+        originalEstimate: valueEstimateRef.current,
+        callBack: () => setIsEstimate(false),
       });
+    } else {
+      setIsEstimate(false);
     }
   };
   return (
-    <div className="flex items-center justify-between">
-      <div className="w-2/12 text-sm font-semibold ">Estimate</div>
-      <div className="w-9/12 ">
+    <div className="grid grid-cols-1 md:grid-cols-4 items-center">
+      <div className="text-sm font-semibold ">Estimate</div>
+      <div className="md:col-span-3 mt-3 md:mt-0">
         <div>
           {isEstimate ? (
             <div className="flex items-center space-x-2">
               <Input
                 className="w-full"
-                value={valueEstimate}
-                onChange={(e) => setValueEstimate(e.target.value)}
+                defaultValue={valueEstimateRef.current}
+                onChange={(e) => (valueEstimateRef.current = e.target.value)}
               />
               <Button
-                size="sm"
+                className="btn"
                 onClick={(e) => {
                   e.stopPropagation();
 
@@ -54,7 +50,7 @@ const TaskEstimate = () => {
                 <Check className="w-4 h-4 " strokeWidth={3} />
               </Button>
               <Button
-                size="sm"
+                className="btn"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleEstimate(false);
@@ -69,7 +65,7 @@ const TaskEstimate = () => {
               onClick={() => setIsEstimate(true)}
             >
               <Badge className=" pointer-events-none bg-gray-300 text-gray-800 px-2 py-1">
-                {valueEstimate}m
+                {taskDetail.originalEstimate}m
               </Badge>
             </div>
           )}

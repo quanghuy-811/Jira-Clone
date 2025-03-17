@@ -71,8 +71,6 @@ body {
   }
 }
 
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -80,4 +78,18 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.btn {
+  @apply h-7 px-3 py-2 text-xs md:px-3 md:py-4 md:h-9 md:text-sm;
+}
+.icon {
+  @apply rounded-full h-7 w-7 md:w-8 md:h-8 lg:w-10 lg:h-10;
+}
+
+.icon__board {
+  @apply rounded-full w-6 h-6 lg:w-7 lg:h-7;
+}
+.text__lable {
+  @apply text-sm md:text-base font-medium;
 }

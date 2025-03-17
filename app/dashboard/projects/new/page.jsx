@@ -82,14 +82,14 @@ export default function CreateProjectPage() {
       </div>
       <Card className="mt-5">
         <CardHeader>
-          <h1 className="text-2xl font-bold">Create New Project</h1>
+          <h1 className="text-xl md:text-2xl lg:text-3xl text-black font-semibold">
+            Create New Project
+          </h1>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Project Name
-              </label>
+              <label className="block text__lable mb-1">Project Name</label>
               <Input
                 value={formData.projectName}
                 onChange={(e) =>
@@ -100,9 +100,7 @@ export default function CreateProjectPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Description
-              </label>
+              <label className="block text__lable mb-1">Description</label>
               <Textarea
                 value={formData.description}
                 onChange={(e) =>
@@ -136,15 +134,16 @@ export default function CreateProjectPage() {
               </Select>
             </div>
 
-            <div className="flex justify-end space-x-4">
+            <div className="flex justify-end space-x-2">
               <Button
+                className="btn"
                 type="button"
                 variant="destructive"
                 onClick={() => router.push("/dashboard/projects")}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button className="btn" type="submit" disabled={loading}>
                 {loading ? "Creating..." : "Create Project"}
               </Button>
             </div>

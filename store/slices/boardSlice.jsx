@@ -1,14 +1,55 @@
+import { axiosTaskMetaData } from "@/lib/services/axiosTaskMetaData";
 import { boardService } from "@/lib/services/broadService";
 import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export const getTaskDetail = createAsyncThunk(
   "board/getTaskDetail",
-  async ({ taskId }) => {
+  async ({ taskId }, { rejectWithValue }) => {
     try {
       const response = await boardService.getTaskDetail(taskId);
 
       return response.content;
     } catch (error) {}
+  }
+);
+
+export const createTask = createAsyncThunk(
+  "board/createTask",
+  async ({ valueCreateTask }, { rejectWithValue }) => {
+    try {
+      const response = await boardService.createTask(valueCreateTask);
+
+      return response.content;
+    } catch (error) {
+      console.log("error: ", error);
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+
+export const removeTask = createAsyncThunk(
+  "board/removeTask",
+  async ({ taskId }, { rejectWithValue }) => {
+    try {
+      const response = await boardService.removeTask(taskId);
+
+      return response.content;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+
+export const updateTask = createAsyncThunk(
+  "board/updateTask",
+  async ({ valueUpdateTask }, { rejectWithValue }) => {
+    try {
+      const response = await boardService.updateTask(valueUpdateTask);
+
+      return response.content;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "updateTask failed ");
+    }
   }
 );
 
@@ -23,7 +64,9 @@ export const updateDescription = createAsyncThunk(
 
       return response.content;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Something went wrong");
+      return rejectWithValue(
+        error.response?.data || "update Description failed"
+      );
     }
   }
 );
@@ -46,20 +89,8 @@ export const updatePriority = createAsyncThunk(
 
       return { taskId, priorityId };
     } catch (error) {
-      console.log("error: ", error);
-      return rejectWithValue(error.response?.data || "Something went wrong");
+      return rejectWithValue(error.response?.data || "update Priority failed");
     }
-  }
-);
-
-export const updateTask = createAsyncThunk(
-  "board/updateTask",
-  async ({ valueUpdateTask }, thunkApi) => {
-    try {
-      const response = await boardService.updateTask(valueUpdateTask);
-
-      return response.content;
-    } catch (error) {}
   }
 );
 
@@ -74,7 +105,7 @@ export const updateEstimate = createAsyncThunk(
 
       return response.content;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Something went wrong");
+      return rejectWithValue(error.response?.data || "update Estimate failed");
     }
   }
 );
@@ -133,6 +164,15 @@ export const deleteComment = createAsyncThunk(
   }
 );
 
+export const getTaskInfo = createAsyncThunk("board/getTaskInfo", async () => {
+  try {
+    const data = await axiosTaskMetaData();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 const boardSlice = createSlice({
   name: "board",
   initialState: {
@@ -142,21 +182,22 @@ const boardSlice = createSlice({
     allPriority: [],
     allTaskType: [],
   },
-  reducers: {
-    setBoardData: (state, action) => {
-      state.allStatus = action.payload.allStatus;
-      state.allPriority = action.payload.allPriority;
-      state.allTaskType = action.payload.allTaskType;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getTaskDetail.fulfilled, (state, action) => {
-      const { ...newData } = action.payload;
-      state.taskDetail = { ...state.taskDetail, ...newData };
-    });
+    builder
+      .addCase(getTaskDetail.fulfilled, (state, action) => {
+        const { ...newData } = action.payload;
+        state.taskDetail = { ...state.taskDetail, ...newData };
+        // state.taskDetail = action.payload;
+      })
+      .addCase(getTaskInfo.fulfilled, (state, action) => {
+        state.allStatus = action.payload.allStatus;
+        state.allPriority = action.payload.allPriority;
+        state.allTaskType = action.payload.allTaskType;
+      });
   },
 });
 
-export const { setBoardData, updateAssigneeUI } = boardSlice.actions;
+export const { updateAssigneeUI } = boardSlice.actions;
 
 export default boardSlice.reducer;

@@ -24,6 +24,20 @@ export const boardService = {
     );
     return response.data;
   },
+
+  createTask: async (valueCreateTask) => {
+    const response = await interseter.post(
+      `/Project/createTask`,
+      valueCreateTask
+    );
+    return response.data;
+  },
+  removeTask: async (taskId) => {
+    const response = await interseter.delete(
+      `/Project/removeTask?taskId=${taskId}`
+    );
+    return response.data;
+  },
   updateDescription: async (taskId, description) => {
     const response = await interseter.put("/Project/updateDescription", {
       taskId,
