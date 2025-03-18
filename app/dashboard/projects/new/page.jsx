@@ -1,6 +1,6 @@
 // app/dashboard/projects/new/page.jsx
 "use client";
-
+import * as Yup from "yup";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useFormik } from "formik";
 
 export default function CreateProjectPage() {
   const router = useRouter();
@@ -32,6 +33,35 @@ export default function CreateProjectPage() {
     projectName: "",
     description: "",
     categoryId: "",
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      projectName: "",
+      description: "",
+      categoryId: "",
+    },
+    validationSchema: Yup.object().shape({
+      projectName: Yup.string().required("Project Name is required"),
+      description: Yup.string().required("Description is required"),
+      categoryId: Yup.string().required(" Category is required"),
+    }),
+    validateOnBlur: false,
+    onSubmit: async (values) => {
+      console.log("values: ", values);
+      try {
+        await projectService.createProject(values);
+        toast.success("Create Success");
+        router.push("/dashboard/projects");
+      } catch (error) {
+        console.log(error);
+        toast.error(
+          error?.response.data.content || "Failed to create project:"
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
   });
 
   useEffect(() => {
@@ -47,22 +77,6 @@ export default function CreateProjectPage() {
 
     fetchCategories();
   }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      await projectService.createProject(formData);
-      toast.success("Create Success");
-      router.push("/dashboard/projects");
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to create project:");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -88,36 +102,45 @@ export default function CreateProjectPage() {
           </h1>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={formik.handleSubmit} className="space-y-4">
             <div>
               <label className="block text__lable mb-1">Project Name</label>
               <Input
-                value={formData.projectName}
-                onChange={(e) =>
-                  setFormData({ ...formData, projectName: e.target.value })
-                }
-                required
+                name="projectName"
+                value={formik.values.projectName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
+              {formik.touched.projectName && formik.errors.projectName && (
+                <p className="text-red-500 text-xs mt-1">
+                  {formik.errors.projectName}
+                </p>
+              )}
             </div>
 
             <div>
               <label className="block text__lable mb-1">Description</label>
               <Textarea
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                required
+                name="description"
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
+              {formik.touched.description && formik.errors.description && (
+                <p className="text-red-500 text-xs mt-1">
+                  {formik.errors.description}
+                </p>
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-1">Category</label>
               <Select
-                value={formData.categoryId}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, categoryId: value })
-                }
+                value={formik.values.categoryId}
+                onChange={formik.handleChange}
+                onValueChange={(value) => {
+                  formik.setFieldValue("categoryId", value);
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -133,6 +156,11 @@ export default function CreateProjectPage() {
                   ))}
                 </SelectContent>
               </Select>
+              {formik.touched.categoryId && formik.errors.categoryId && (
+                <p className="text-red-500 text-xs mt-1">
+                  {formik.errors.categoryId}
+                </p>
+              )}
             </div>
 
             <div className="flex justify-end space-x-2">
