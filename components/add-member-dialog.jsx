@@ -14,10 +14,9 @@ import { SelectSeparator } from "./ui/select";
 import { useDispatch, useSelector } from "react-redux";
 import { checkUserPermission } from "@/lib/utils";
 import {
-  addMember,
   getUserByProjectId,
   setMemberInProject,
-} from "@/store/slices/projectDetailSlice";
+} from "@/store/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { userService } from "@/lib/services/userService";
 import { X } from "lucide-react";
@@ -29,7 +28,7 @@ export function AddMemberDialog({ children, projectDetail, users }) {
   const [searchUser, setSearchUser] = useState("");
   const { user } = useSelector((state) => state.auth);
   const { listMember, loadingListMember } = useSelector(
-    (state) => state.detailProject.membersInProject
+    (state) => state.user.membersInProject
   );
 
   // add member
@@ -148,6 +147,7 @@ export function AddMemberDialog({ children, projectDetail, users }) {
                                   </div>
 
                                   <Button
+                                    color="primary"
                                     className="btn"
                                     onClick={() => {
                                       handleAddMember(item);

@@ -4,13 +4,12 @@ import {
   insertComment,
   updateComment,
 } from "@/store/slices/boardSlice";
-import { getProjectById } from "@/store/slices/projectDetailSlice";
-import React from "react";
+import { getProjectById } from "@/store/slices/projectSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
 const useCommentAction = () => {
-  const { projectDetail } = useSelector((state) => state.detailProject);
+  const { projectDetail } = useSelector((state) => state.projects);
 
   const dispatch = useDispatch();
   const editComment = async ({ idComment, contentComment, taskId }) => {

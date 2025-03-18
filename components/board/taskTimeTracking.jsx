@@ -6,9 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { Badge } from "../ui/badge";
-import { getTaskDetail, updateTimeTracking } from "@/store/slices/boardSlice";
-import { getProjectById } from "@/store/slices/projectDetailSlice";
-import { toast } from "sonner";
 import useTaskAction from "@/lib/hook/useTaskAction";
 
 const TaskTimeTracking = () => {
@@ -63,7 +60,7 @@ const TaskTimeTracking = () => {
             open={openTimeTracking}
             onOpenChange={setOpenTimeTracking}
           >
-            <DialogContent aria-describedby={null}>
+            <DialogContent className="md:max-w-xl" aria-describedby={null}>
               <DialogTitle className="sr-only">timeTracking</DialogTitle>
               <div className="p-2 space-y-3 mt-5">
                 <Progress
@@ -119,7 +116,7 @@ const TaskTimeTracking = () => {
                 </div>
                 <div className="space-x-2 flex justify-end">
                   <Button
-                    size="sm"
+                    className="btn"
                     onClick={() => {
                       handleUpdateTimeTracking();
                     }}
@@ -127,7 +124,7 @@ const TaskTimeTracking = () => {
                     Save
                   </Button>
                   <Button
-                    className="hover:text-red-500"
+                    className="hover:text-red-500 btn"
                     variant="ghost"
                     onClick={() => {
                       setOpenTimeTracking(false);

@@ -125,10 +125,10 @@ const EditForm = ({ categories, detail }) => {
             </div>
 
             <CardFooter className="flex justify-end pr-0 space-x-2">
-              <Button className="btn" variant="destructive">
+              <Button className="btn hover:text-red-600" variant="outline">
                 Cancel
               </Button>
-              <Button className="btn" type="submit">
+              <Button className="btn" color="primary" type="submit">
                 Update
               </Button>
             </CardFooter>

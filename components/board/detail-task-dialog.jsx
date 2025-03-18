@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { getTaskDetail } from "@/store/slices/boardSlice";
 import React, { memo, useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-
 import {
   Select,
   SelectContent,
@@ -12,16 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-
-import { toast } from "sonner";
-import { getProjectById } from "@/store/slices/projectDetailSlice";
-// import TaskTypeBadge from "./board/taskTypeBadge";
-// import TaskComment from "./board/taskComment";
 import { ScrollArea } from "../ui/scroll-area";
-
 import useTaskAction from "@/lib/hook/useTaskAction";
 import { Trash, X } from "lucide-react";
-
 import TaskAssignees from "./taskAssignees";
 import TaskDescription from "./taskDescription";
 import TaskComment from "./taskComment";

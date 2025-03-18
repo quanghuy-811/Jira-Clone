@@ -1,7 +1,5 @@
-import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { boardService } from "../services/broadService";
 import {
   createTask,
   getTaskDetail,
@@ -13,18 +11,20 @@ import {
   updateTask,
   updateTimeTracking,
 } from "@/store/slices/boardSlice";
-import { getProjectById } from "@/store/slices/projectDetailSlice";
 import { useRouter } from "next/navigation";
+import { getProjectById } from "@/store/slices/projectSlice";
 
 const useTaskAction = () => {
   const router = useRouter();
-  const { projectDetail } = useSelector((state) => state.detailProject);
+  const { projectDetail } = useSelector((state) => state.projects);
   const dispatch = useDispatch();
 
   const createTaskAction = async ({ valueCreateTask, projectId, callBack }) => {
     try {
       await dispatch(createTask({ valueCreateTask })).unwrap();
       dispatch(getProjectById({ projectId }));
+      toast.success("create task success");
+
       if (callBack) {
         callBack();
       }

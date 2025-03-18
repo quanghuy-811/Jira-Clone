@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { projectService } from "@/lib/services/projectService";
-import { addMember, removedMember } from "./projectDetailSlice";
 
 // get all Project
 export const fetchProject = createAsyncThunk(
@@ -17,6 +16,7 @@ export const fetchProject = createAsyncThunk(
   }
 );
 
+// getAll Project
 export const createProject = createAsyncThunk(
   "projects/createProject",
   async (projectData) => {
@@ -24,18 +24,67 @@ export const createProject = createAsyncThunk(
     return response;
   }
 );
+// get Project By Id
+
+export const getProjectById = createAsyncThunk(
+  "projects/getProjectById",
+  async ({ projectId }) => {
+    try {
+      const response = await projectService.getProjectById(projectId);
+
+      return { ...response.content };
+    } catch (error) {}
+  }
+);
 
 const projectSlice = createSlice({
   name: "projects",
   initialState: {
-    projectUser: null,
+    projectDetail: null,
     projectList: [],
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    setProjectDetail: (state, action) => {
+      state.projectDetail = { ...action.payload };
+    },
+    updateStatusUI: (state, action) => {
+      const { taskId, newStatusId } = action.payload;
+
+      if (!state.projectDetail) return;
+
+      let movedTask = null;
+
+      //  Xóa task khỏi danh sách cũ
+      state.projectDetail.lstTask = state.projectDetail.lstTask.map(
+        (status) => {
+          return {
+            ...status,
+            lstTaskDeTail: status.lstTaskDeTail.filter((task) => {
+              if (task.taskId.toString() === taskId) {
+                movedTask = { ...task, statusId: newStatusId };
+                return false; // Xóa task khỏi danh sách cũ
+              }
+              return true;
+            }),
+          };
+        }
+      );
+
+      //  Thêm task vào danh sách mới
+      if (movedTask) {
+        state.projectDetail.lstTask.forEach((status) => {
+          if (status.statusId.toString() === newStatusId) {
+            status.lstTaskDeTail.push(movedTask);
+          }
+        });
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
+      //get all project
       .addCase(fetchProject.pending, (state) => {
         state.loading = true;
       })
@@ -52,28 +101,22 @@ const projectSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
+      // get Project by Id
+      .addCase(getProjectById.fulfilled, (state, action) => {
+        const { ...newDataProjectDetail } = action.payload;
+
+        state.projectDetail = {
+          ...state.projectDetail,
+          ...newDataProjectDetail,
+        };
+      })
+      // create project
       .addCase(createProject.fulfilled, (state, action) => {
         state.projectList.push(action.payload);
-      })
-      .addCase(addMember.fulfilled, (state, action) => {
-        const project = state.projectList.find(
-          (p) => p.id === action.meta.arg.projectId
-        );
-        if (project) {
-          project.members.push(action.payload); // Thêm thành viên vào danh sách
-        }
-      })
-      .addCase(removedMember.fulfilled, (state, action) => {
-        const project = state.projectList.find(
-          (p) => p.id === action.meta.arg.projectId
-        );
-        if (project) {
-          project.members = project.members.filter(
-            (m) => m.userId !== action.payload.userId
-          );
-        }
       });
   },
 });
+
+export const { setProjectDetail, updateStatusUI } = projectSlice.actions;
 
 export default projectSlice.reducer;

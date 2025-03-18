@@ -163,14 +163,14 @@ const FormEditUser = ({ user }) => {
               </div>
               <DialogFooter className={"pt-2"}>
                 <Button
-                  className="btn"
+                  className="btn hover:text-red-600"
                   onClick={onClose}
                   type="button"
                   variant="outline"
                 >
                   Cancel
                 </Button>
-                <Button className="btn" type="submit">
+                <Button className="btn" color="primary" type="submit">
                   Submit
                 </Button>
               </DialogFooter>

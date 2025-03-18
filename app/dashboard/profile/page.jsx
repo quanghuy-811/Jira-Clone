@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { projectService } from "@/lib/services/projectService";
 import {
   Table,
   TableBody,
@@ -13,23 +12,32 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetchProject } from "@/store/slices/projectSlice";
+import Link from "next/link";
 
 export default function ProfilePage() {
-  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-  const { projectUser } = useSelector((state) => state.projects);
+
+  const user = useSelector((state) => state.auth.user);
+  const [projectUser, setProjectUser] = useState(null);
+  const { projectList, loading } = useSelector((state) => state.projects);
 
   useEffect(() => {
-    // fetchUserProjects();
-    dispatch(fetchProject());
-  }, [user?.id]);
+    if (projectList.length > 0) {
+      const filter = projectList.filter(
+        (project) => project.creator.id === user?.id
+      );
+      setProjectUser(filter);
+    } else {
+      dispatch(fetchProject());
+    }
+  }, [projectList]);
 
   return (
     <div className="space-y-6">
       {/* User Info Card */}
       <Card>
         <CardHeader>
-          <h2 className="text-xl md:text-2xl lg:text-3xl text-black font-semibold">
+          <h2 className="text-lg md:text-xl lg:text-2xl text-black font-semibold">
             Profile Information
           </h2>
         </CardHeader>
@@ -61,7 +69,7 @@ export default function ProfilePage() {
       {/* User Projects Card */}
       <Card>
         <CardHeader>
-          <h2 className="text-xl md:text-2xl lg:text-3xl text-black font-semibold">
+          <h2 className="text-lg md:text-xl lg:text-2xl text-black font-semibold">
             My Projects
           </h2>
         </CardHeader>
@@ -75,23 +83,44 @@ export default function ProfilePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {projectUser?.map((project) => (
-                <TableRow key={project.id}>
-                  <TableCell>{project.projectName}</TableCell>
-                  <TableCell>{project.categoryName}</TableCell>
-
-                  <TableCell className="hidden sm:table-cell">
-                    {project.members?.length || 0}
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center py-4">
+                    <span className="text-gray-500">Loading...</span>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                <>
+                  {projectUser?.map((project) => (
+                    <TableRow key={project.id} className="hover:bg-gray-100">
+                      <TableCell>
+                        <Link
+                          className="hover:underline hover:text-blue-600 text-blue-700"
+                          href={`/dashboard/projects/${project.id}/board`}
+                        >
+                          {project.projectName}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{project.categoryName}</TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        {project.members?.length || 0}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </>
+              )}
+
+              {projectUser?.length === 0 && (
+                <>
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center py-4">
+                      <span className="text-gray-500">No Data</span>
+                    </TableCell>
+                  </TableRow>
+                </>
+              )}
             </TableBody>
           </Table>
-          {projectUser?.length === 0 && (
-            <p className="text-center text-gray-500 py-4">
-              You haven't joined any projects yet.
-            </p>
-          )}
         </CardContent>
       </Card>
     </div>

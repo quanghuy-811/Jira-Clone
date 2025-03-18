@@ -17,13 +17,13 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { LogOut, Menu, User } from "lucide-react";
+import { Tooltip } from "antd";
 
 export function MainNav() {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useDispatch();
   const [isOpenFormCreateTask, setIsOpenFormCreateTask] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => {
     return state.auth;
   });
@@ -65,14 +65,14 @@ export function MainNav() {
             >
               Jira Clone
             </Link>
-            <div className="flex items-center text-gray-600">
+            <div className="flex items-center text-gray-800">
               <Button variant="ghost" className="hover:bg-blue-100 btn">
                 <Link
                   prefetch={true}
                   href="/dashboard/projects"
                   className={`font-normal text-sm md:text-base font-serif  ${
                     pathname === "/dashboard/projects"
-                      ? "text-gray-900 border-b-2 border-gray-900"
+                      ? "text-blue-600 border-b-2 border-blue-700"
                       : ""
                   }`}
                 >
@@ -85,7 +85,7 @@ export function MainNav() {
                   prefetch={true}
                   className={`font-normal text-sm md:text-base font-serif ${
                     pathname === "/dashboard/user"
-                      ? "text-black border-b-2 border-gray-900"
+                      ? "text-blue-600 border-b-2 border-blue-700"
                       : ""
                   }`}
                 >
@@ -96,11 +96,7 @@ export function MainNav() {
                 <Link
                   href="#"
                   onClick={() => setIsOpenFormCreateTask(true)}
-                  className={`font-normal text-sm md:text-base font-serif ${
-                    isOpenFormCreateTask === "/dashboard/profile"
-                      ? "text-black border-b-2 border-gray-900"
-                      : ""
-                  }`}
+                  className={`font-normal text-sm md:text-base font-serif `}
                 >
                   Create Task
                 </Link>
@@ -109,22 +105,21 @@ export function MainNav() {
           </div>
           <div className="hidden md:flex items-center space-x-4">
             <span className="text-sm text-gray-600">
-              {/* {user?.name || user?.email} */}
-              <Link href="/dashboard/profile" prefetch={true}>
-                <Avatar className=" bg-gray-300 w-7 h-7 border-2 border-white transition-transform duration-200 hover:scale-125">
-                  <AvatarImage src={user.avatar} />
-                </Avatar>
-              </Link>
+              <Tooltip placement="top" title={"Profile"}>
+                <Link href="/dashboard/profile" prefetch={true}>
+                  <Avatar className=" bg-gray-300 w-7 h-7 border-2 border-white transition-transform duration-200 hover:scale-125">
+                    <AvatarImage src={user.avatar} />
+                  </Avatar>
+                </Link>
+              </Tooltip>
             </span>
-            <Button variant="outline" onClick={handleLogout}>
-              Logout
-            </Button>
+            <Button onClick={handleLogout}>Logout</Button>
           </div>
           {/* Mobile */}
           <div className="md:hidden flex items-center space-x-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline">
+                <Button size="sm">
                   <Menu size={4} />
                 </Button>
               </DropdownMenuTrigger>

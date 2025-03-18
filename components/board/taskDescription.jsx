@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { useDispatch, useSelector } from "react-redux";
-import { getTaskDetail, updateDescription } from "@/store/slices/boardSlice";
+import { useSelector } from "react-redux";
 
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -13,7 +12,6 @@ const TaskDescription = ({ taskId }) => {
   const { taskDetail } = useSelector((state) => state.board);
   const [description, setDescription] = useState(taskDetail.description || "");
   const [isDescription, setIsDescription] = useState(false);
-  const dispatch = useDispatch();
   const { updateDescriptionAction } = useTaskAction();
 
   const handleUpdateDescription = () => {

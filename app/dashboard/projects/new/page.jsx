@@ -38,6 +38,7 @@ export default function CreateProjectPage() {
     const fetchCategories = async () => {
       try {
         const response = await projectService.getCategories();
+
         setCategories(response);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -136,14 +137,19 @@ export default function CreateProjectPage() {
 
             <div className="flex justify-end space-x-2">
               <Button
-                className="btn"
+                className="btn hover:text-red-600"
                 type="button"
-                variant="destructive"
+                variant="outline"
                 onClick={() => router.push("/dashboard/projects")}
               >
                 Cancel
               </Button>
-              <Button className="btn" type="submit" disabled={loading}>
+              <Button
+                className="btn"
+                color="primary"
+                type="submit"
+                disabled={loading}
+              >
                 {loading ? "Creating..." : "Create Project"}
               </Button>
             </div>

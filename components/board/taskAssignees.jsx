@@ -1,6 +1,6 @@
-import { Check, X } from "lucide-react";
+import { Check, Inbox, X } from "lucide-react";
 import { useState, memo } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import {
   Popover,
   PopoverAnchor,
@@ -9,14 +9,13 @@ import {
 } from "../ui/popover";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
-
 import useTaskAction from "@/lib/hook/useTaskAction";
 
 const TaskAssignees = ({ taskId }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
-  const { projectDetail } = useSelector((state) => state.detailProject);
+  const { projectDetail } = useSelector((state) => state.projects);
   const { taskDetail } = useSelector((state) => state.board, shallowEqual);
 
   const { updateTaskAction } = useTaskAction();
@@ -54,6 +53,7 @@ const TaskAssignees = ({ taskId }) => {
                       setOpen(true); // Luôn mở popover
                     }}
                     className="btn"
+                    color="amber"
                   >
                     Add
                   </Button>

@@ -1,6 +1,5 @@
 import { PlusIcon } from "lucide-react";
 import { useRef, useState } from "react";
-import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import {
   Select,
@@ -16,7 +15,7 @@ import { Button } from "../ui/button";
 import useTaskAction from "@/lib/hook/useTaskAction";
 
 const CreateTaskInBoard = ({ projectId }) => {
-  const { projectDetail } = useSelector((state) => state.detailProject);
+  const { projectDetail } = useSelector((state) => state.projects);
 
   const timeoutRef = useRef(null);
   const { allTaskType } = useSelector((state) => state.board);

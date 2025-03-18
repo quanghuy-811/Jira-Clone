@@ -40,6 +40,8 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Tooltip } from "antd";
+import { categoryColors } from "@/lib/utils";
+import { Badge } from "../ui/badge";
 
 export function ProjectList({ projects, users }) {
   const router = useRouter();
@@ -71,8 +73,6 @@ export function ProjectList({ projects, users }) {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
-
-  useEffect(() => {}, []);
 
   return (
     <div className="space-y-4">
@@ -113,19 +113,21 @@ export function ProjectList({ projects, users }) {
                     {project.projectName}
                   </Link>
                 </TableCell>
-                <TableCell className="hidden md:table-cell">
+                <TableCell className={`hidden md:table-cell  `}>
                   {project.categoryName}
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">
-                  {project.creator?.name}
+                  {project.creator?.name || (
+                    <p className="text-gray-500">No data</p>
+                  )}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">
                   <AddMemberDialog projectDetail={project} users={users}>
                     {(openDialog) => (
                       <Button
-                        className="hover:shadow-md"
+                        className="text-white"
                         variant="outline"
-                        size="sm"
+                        color="primary"
                         onClick={openDialog} // ✅ Vẫn dùng như cũ
                       >
                         Members ({project.members?.length || 0})

@@ -1,27 +1,20 @@
 "use client";
-import { getTaskInfo, updateStatus } from "@/store/slices/boardSlice";
+import { updateStatus } from "@/store/slices/boardSlice";
 import {
   DndContext,
-  KeyboardSensor,
   MouseSensor,
-  PointerSensor,
   TouchSensor,
   useDraggable,
   useDroppable,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Plus, PlusIcon, User } from "lucide-react";
+import { Plus, User } from "lucide-react";
 import { AddMemberDialog } from "../add-member-dialog";
-import {
-  getProjectById,
-  setProjectDetail,
-  updateStatusUI,
-} from "@/store/slices/projectDetailSlice";
 import { toast } from "sonner";
 import TaskTypeBadge from "./taskTypeBadge";
 import { Avatar, AvatarFallback } from "../ui/avatar";
@@ -33,12 +26,17 @@ import {
 } from "../ui/tooltip";
 import CreateTaskInBoard from "./createTaskinBoard";
 import DetailTaskDialog from "./detail-task-dialog";
+import {
+  getProjectById,
+  setProjectDetail,
+  updateStatusUI,
+} from "@/store/slices/projectSlice";
 
 const BoardContent = ({ project, users }) => {
   const dispatch = useDispatch();
   const [taskId, setTaskId] = useState("");
   const [isOpenTask, setIsOpenTask] = useState(false); // (dialog Detail Task)
-  const { projectDetail } = useSelector((state) => state.detailProject);
+  const { projectDetail } = useSelector((state) => state.projects);
 
   useEffect(() => {
     dispatch(setProjectDetail(project));
@@ -57,7 +55,7 @@ const BoardContent = ({ project, users }) => {
       setIsDragging(false);
       clickTimer.current = setTimeout(() => {
         setIsDragging(true); // Nếu giữ lâu thì đánh dấu là đang kéo
-      }, 150);
+      }, 100);
     };
 
     const handlePointerUp = () => {
@@ -168,9 +166,6 @@ const BoardContent = ({ project, users }) => {
 
   const onDragEnd = (event) => {
     const { active, over } = event;
-
-    console.log("over: ", over);
-    console.log("active: ", active);
 
     if (!over) return;
 

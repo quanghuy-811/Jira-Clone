@@ -27,12 +27,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../ui/popover";
-import { Check, ChevronsUpDown, Inbox, X } from "lucide-react";
+import { Check, Inbox, X } from "lucide-react";
 
-import {
-  getProjectById,
-  getUserByProjectId,
-} from "@/store/slices/projectDetailSlice";
+import { getUserByProjectId } from "@/store/slices/userSlice";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Slider } from "../ui/slider";
@@ -47,17 +44,7 @@ const FormCreateTask = ({ isOpen, onClose }) => {
     (state) => state.board
   );
   const { projectList, projectUser } = useSelector((state) => state.projects);
-  const { membersInProject } = useSelector((state) => state.detailProject);
-
-  //
-  //
-  //
-
-  //
-  //
-  //
-  //
-  //
+  const { membersInProject } = useSelector((state) => state.user);
 
   const filter = membersInProject.listMember?.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
@@ -476,14 +463,14 @@ const FormCreateTask = ({ isOpen, onClose }) => {
             {/* Buttons */}
             <DialogFooter className={"pt-2"}>
               <Button
-                className="btn"
+                className="btn hover:text-red-600"
                 onClick={onClose}
                 type="button"
                 variant="outline"
               >
                 Cancel
               </Button>
-              <Button className="btn" type="submit">
+              <Button className="btn" color="primary" type="submit">
                 Submit
               </Button>
             </DialogFooter>
