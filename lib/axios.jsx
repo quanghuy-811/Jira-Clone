@@ -4,10 +4,10 @@ import { getClientAuthToken, getServerAuthToken } from "./utils";
 
 export const axiosInstance = () => {
   const instance = axios.create({
-    baseURL: API_CONFIG.BASE_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: {
       "Content-Type": "application/json",
-      TokenCybersoft: API_CONFIG.CYBERSOFT_TOKEN,
+      TokenCybersoft: process.env.NEXT_PUBLIC_CYBERSOFT_TOKEN,
     },
   });
 
