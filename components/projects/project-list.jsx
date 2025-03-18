@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Table,
   TableBody,
@@ -19,53 +19,46 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Ellipsis, Pen, Search, Trash } from "lucide-react";
 import { projectService } from "@/lib/services/projectService";
 import { AddMemberDialog } from "../add-member-dialog";
 import { useRouter } from "next/navigation";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipProvider,
+//   TooltipTrigger,
+// } from "../ui/tooltip";
 import Link from "next/link";
+import { toast } from "sonner";
+import PaginationData from "./paginationData";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Tooltip } from "antd";
+import { categoryColors } from "@/lib/utils";
+import { Badge } from "../ui/badge";
 
-export function ProjectList() {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
-  const currentUser = useSelector((state) => state.auth.user);
+export function ProjectList({ projects, users }) {
   const router = useRouter();
-
-  const fetchProjects = async () => {
-    setLoading(true);
-    try {
-      const response = await projectService.getAllProjects();
-      setProjects(response.content);
-    } catch (error) {
-      console.error("Failed to fetch projects:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10; // Số project trên mỗi trang
+  const currentUser = useSelector((state) => state.auth.user);
 
   const handleDeleteProject = async (projectId) => {
     try {
       await projectService.deleteProject(projectId);
-      console.log(projectId);
+      router.refresh();
 
-      fetchProjects();
+      toast.success("Delete success");
     } catch (error) {
-      console.error("Failed to delete project:", error);
+      toast.warning(error?.response?.data?.content || "Delete Project Failed");
     }
-  };
-
-  const handleAddMember = (projectId) => {
-    setSelectedProjectId(projectId);
-    setIsAddMemberOpen(true);
   };
 
   const isCreator = (project) => {
@@ -76,48 +69,10 @@ export function ProjectList() {
     project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const ProjectTableSkeleton = () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>ID</TableHead>
-          <TableHead>Project Name</TableHead>
-          <TableHead>Category</TableHead>
-          <TableHead>Creator</TableHead>
-          <TableHead>Members</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {[...Array(5)].map((_, index) => (
-          <TableRow key={index}>
-            <TableCell>
-              <Skeleton className="h-4 w-8" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-4 w-[250px]" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-4 w-[150px]" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-4 w-[120px]" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-8 w-[100px]" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-8 w-8 rounded-full" />
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+  const paginatedProjects = filteredProjects.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
 
   return (
     <div className="space-y-4">
@@ -131,22 +86,20 @@ export function ProjectList() {
         />
       </div>
 
-      {loading ? (
-        <ProjectTableSkeleton />
-      ) : (
+      <div className="hidden md:flex">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Project Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Creator</TableHead>
-              <TableHead>Members</TableHead>
+              <TableHead className="hidden md:table-cell">Category</TableHead>
+              <TableHead className="hidden lg:table-cell">Creator</TableHead>
+              <TableHead className="hidden sm:table-cell">Members</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProjects.map((project) => (
+            {paginatedProjects.map((project) => (
               <TableRow
                 className="hover:bg-gray-200 transition-all duration-300"
                 key={project.id}
@@ -154,29 +107,40 @@ export function ProjectList() {
                 <TableCell>{project.id}</TableCell>
                 <TableCell>
                   <Link
-                    className="hover:underline"
-                    href={`/dashboard/projects/${project.id}/broad`}
+                    className="hover:underline hover:text-blue-600 text-blue-700"
+                    href={`/dashboard/projects/${project.id}/board`}
                   >
                     {project.projectName}
                   </Link>
                 </TableCell>
-                <TableCell>{project.categoryName}</TableCell>
-                <TableCell>{project.creator?.name}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddMember(project.id)}
-                  >
-                    Members ({project.members?.length || 0})
-                  </Button>
+                <TableCell className={`hidden md:table-cell  `}>
+                  {project.categoryName}
+                </TableCell>
+                <TableCell className="hidden lg:table-cell">
+                  {project.creator?.name || (
+                    <p className="text-gray-500">No data</p>
+                  )}
+                </TableCell>
+                <TableCell className="hidden sm:table-cell">
+                  <AddMemberDialog projectDetail={project} users={users}>
+                    {(openDialog) => (
+                      <Button
+                        className="text-white"
+                        variant="outline"
+                        color="primary"
+                        onClick={openDialog} // ✅ Vẫn dùng như cũ
+                      >
+                        Members ({project.members?.length || 0})
+                      </Button>
+                    )}
+                  </AddMemberDialog>
                 </TableCell>
                 <TableCell>
                   {isCreator(project) ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          •••
+                        <Button variant="ghost" size="icon">
+                          <Ellipsis size={16} color="#00ff1e" strokeWidth={3} />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
@@ -198,38 +162,123 @@ export function ProjectList() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : (
-                    <TooltipProvider delayDuration={0}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="inline-block">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              disabled
-                              className="cursor-not-allowed opacity-50"
-                            >
-                              •••
-                            </Button>
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          You are not the owner of this project
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Tooltip
+                      title={"You are not the owner of this project"}
+                      trigger="click"
+                    >
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="cursor-not-allowed"
+                      >
+                        <Ellipsis color="#ff0000" strokeWidth={3} />
+                      </Button>
+                    </Tooltip>
                   )}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      )}
+      </div>
 
-      <AddMemberDialog
-        projectId={selectedProjectId}
-        isOpen={isAddMemberOpen}
-        onClose={() => setIsAddMemberOpen(false)}
-        onSuccess={fetchProjects}
+      {/* Mobile */}
+      <div className="md:hidden">
+        <div className="space-y-3">
+          {paginatedProjects.map((project) => (
+            <Card key={project.id}>
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center">
+                  <h2 className="text-sm">ID: {project.id}</h2>
+                  <div>
+                    {isCreator(project) ? (
+                      <>
+                        <Button
+                          onClick={() =>
+                            router.push(
+                              `/dashboard/projects/${project.id}/edit`
+                            )
+                          }
+                          variant="ghost"
+                          size="icon"
+                        >
+                          <Pen color="#519cec" strokeWidth={2} />
+                        </Button>
+                        <Button
+                          onClick={() => handleDeleteProject(project.id)}
+                          variant="ghost"
+                          size="icon"
+                        >
+                          <Trash color="#ec5158" strokeWidth={2} />
+                        </Button>
+                      </>
+                    ) : (
+                      <Tooltip title="You are not the owner of this project">
+                        <Button variant="ghost" size="icon">
+                          <Pen color={"#519cec"} strokeWidth={2} />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Trash color="#ec5158" strokeWidth={2} />
+                        </Button>
+                      </Tooltip>
+                    )}
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center space-x-3 text-sm">
+                  <h3 className="w-1/5">Project Name </h3>
+                  <p className="flex-1 font-medium ">
+                    :{" "}
+                    <Link
+                      className=" hover:text-blue-600 underline text-blue-700"
+                      href={`/dashboard/projects/${project.id}/board`}
+                    >
+                      {project.projectName}
+                    </Link>
+                  </p>
+                </div>
+                <div className="flex items-center space-x-3 text-sm mt-3">
+                  <h3 className="w-1/5"> Creator </h3>
+                  <p className="flex-1 font-semibold">
+                    : {project.creator?.name}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-3 text-sm mt-3">
+                  <h3 className="w-1/5">Category</h3>
+                  <p className="flex-1 font-semibold ">
+                    :{" "}
+                    <span className="text-green-500">
+                      {project.categoryName}
+                    </span>
+                  </p>
+                </div>
+                <div className="flex items-center space-x-3 text-sm mt-3">
+                  <h3 className="w-1/5"> Members </h3>
+
+                  <AddMemberDialog projectDetail={project} users={users}>
+                    {(openDialog) => (
+                      <Button
+                        className="hover:shadow-md"
+                        size="sm"
+                        onClick={openDialog} // ✅ Vẫn dùng như cũ
+                      >
+                        Members ({project.members?.length || 0})
+                      </Button>
+                    )}
+                  </AddMemberDialog>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      <PaginationData
+        totalItems={filteredProjects.length}
+        pageSize={pageSize}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
       />
     </div>
   );

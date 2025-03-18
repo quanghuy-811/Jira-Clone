@@ -22,6 +22,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function CreateProjectPage() {
   const router = useRouter();
@@ -37,6 +38,7 @@ export default function CreateProjectPage() {
     const fetchCategories = async () => {
       try {
         const response = await projectService.getCategories();
+
         setCategories(response);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -52,9 +54,11 @@ export default function CreateProjectPage() {
 
     try {
       await projectService.createProject(formData);
-      window.location.href = "/dashboard/projects";
+      toast.success("Create Success");
+      router.push("/dashboard/projects");
     } catch (error) {
-      console.error("Failed to create project:", error);
+      console.log(error);
+      toast.error("Failed to create project:");
     } finally {
       setLoading(false);
     }
@@ -79,14 +83,14 @@ export default function CreateProjectPage() {
       </div>
       <Card className="mt-5">
         <CardHeader>
-          <h1 className="text-2xl font-bold">Create New Project</h1>
+          <h1 className="text-xl md:text-2xl lg:text-3xl text-black font-semibold">
+            Create New Project
+          </h1>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Project Name
-              </label>
+              <label className="block text__lable mb-1">Project Name</label>
               <Input
                 value={formData.projectName}
                 onChange={(e) =>
@@ -97,9 +101,7 @@ export default function CreateProjectPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Description
-              </label>
+              <label className="block text__lable mb-1">Description</label>
               <Textarea
                 value={formData.description}
                 onChange={(e) =>
@@ -133,15 +135,21 @@ export default function CreateProjectPage() {
               </Select>
             </div>
 
-            <div className="flex justify-end space-x-4">
+            <div className="flex justify-end space-x-2">
               <Button
+                className="btn hover:text-red-600"
                 type="button"
-                variant="destructive"
+                variant="outline"
                 onClick={() => router.push("/dashboard/projects")}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button
+                className="btn"
+                color="primary"
+                type="submit"
+                disabled={loading}
+              >
                 {loading ? "Creating..." : "Create Project"}
               </Button>
             </div>

@@ -6,11 +6,24 @@ import { useSelector, useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/store/slices/authSlice";
 import { removeCookies } from "@/lib/utils";
+import { useState } from "react";
+import FormCreateTask from "./board/formCreateTask";
+import { Avatar, AvatarImage } from "./ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { LogOut, Menu, User } from "lucide-react";
+import { Tooltip } from "antd";
 
 export function MainNav() {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useDispatch();
+  const [isOpenFormCreateTask, setIsOpenFormCreateTask] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => {
     return state.auth;
   });
@@ -42,43 +55,103 @@ export function MainNav() {
   }
 
   return (
-    <header className="bg-white border-b">
-      <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-8">
-          <Link
-            href="/dashboard/projects"
-            className="text-2xl font-medium font-sans"
-          >
-            Jira Clone
-          </Link>
-          <div className="flex items-center space-x-4">
+    <div>
+      <header className="bg-white border-b">
+        <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-3 sm:space-x-7">
             <Link
               href="/dashboard/projects"
-              className={`text-gray-600 hover:text-gray-900 font-normal text-base font-serif  ${
-                pathname === "/dashboard/projects" ? "text-gray-900" : ""
-              }`}
+              className="text-xl md:text-2xl font-medium font-sans"
             >
-              Projects
+              Jira Clone
             </Link>
-            <Link
-              href="/dashboard/profile"
-              className={`text-gray-600 hover:text-gray-900 font-normal text-base font-serif ${
-                pathname === "/dashboard/profile" ? "text-gray-900" : ""
-              }`}
-            >
-              Profile
-            </Link>
+            <div className="flex items-center text-gray-800">
+              <Button variant="ghost" className="hover:bg-blue-100 btn">
+                <Link
+                  prefetch={true}
+                  href="/dashboard/projects"
+                  className={`font-normal text-sm md:text-base font-serif  ${
+                    pathname === "/dashboard/projects"
+                      ? "text-blue-600 border-b-2 border-blue-700"
+                      : ""
+                  }`}
+                >
+                  Projects
+                </Link>
+              </Button>
+              <Button variant="ghost" className="hover:bg-blue-100 btn">
+                <Link
+                  href="/dashboard/user"
+                  prefetch={true}
+                  className={`font-normal text-sm md:text-base font-serif ${
+                    pathname === "/dashboard/user"
+                      ? "text-blue-600 border-b-2 border-blue-700"
+                      : ""
+                  }`}
+                >
+                  User
+                </Link>
+              </Button>
+              <Button variant="ghost" className="hover:bg-blue-100 btn">
+                <Link
+                  href="#"
+                  onClick={() => setIsOpenFormCreateTask(true)}
+                  className={`font-normal text-sm md:text-base font-serif `}
+                >
+                  Create Task
+                </Link>
+              </Button>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-600">
-            {user?.name || user?.email}
-          </span>
-          <Button variant="outline" onClick={handleLogout}>
-            Logout
-          </Button>
-        </div>
-      </nav>
-    </header>
+          <div className="hidden md:flex items-center space-x-4">
+            <span className="text-sm text-gray-600">
+              <Tooltip placement="top" title={"Profile"}>
+                <Link href="/dashboard/profile" prefetch={true}>
+                  <Avatar className=" bg-gray-300 w-7 h-7 border-2 border-white transition-transform duration-200 hover:scale-125">
+                    <AvatarImage src={user.avatar} />
+                  </Avatar>
+                </Link>
+              </Tooltip>
+            </span>
+            <Button onClick={handleLogout}>Logout</Button>
+          </div>
+          {/* Mobile */}
+          <div className="md:hidden flex items-center space-x-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm">
+                  <Menu size={4} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuItem>
+                  <Link
+                    href="/dashboard/profile"
+                    prefetch={true}
+                    className="w-full flex items-center space-x-2"
+                  >
+                    <User size={14} className="mr-3" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </nav>
+      </header>
+
+      {/* Dialog create Task */}
+      {isOpenFormCreateTask && (
+        <FormCreateTask
+          isOpen={isOpenFormCreateTask}
+          onClose={() => setIsOpenFormCreateTask(false)}
+        />
+      )}
+    </div>
   );
 }

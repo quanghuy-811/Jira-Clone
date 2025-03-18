@@ -45,15 +45,15 @@ const EditForm = ({ categories, detail }) => {
 
   return (
     <div>
-      <Card className="space-y-4">
-        <CardHeader className="text-3xl text-black font-medium">
+      <Card className="space-x-2 md:space-y-4">
+        <CardHeader className="text-xl md:text-2xl lg:text-3xl text-black font-semibold">
           Update Project
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={formik.handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium mb-2" htmlFor="id">
+          <form onSubmit={formik.handleSubmit} className="space-y-6 ">
+            <div className="">
+              <label className="block text__lable mb-2" htmlFor="id">
                 ID
               </label>
               <Input
@@ -67,10 +67,7 @@ const EditForm = ({ categories, detail }) => {
             </div>
 
             <div>
-              <label
-                className="block text-sm font-medium mb-2"
-                htmlFor="projectName"
-              >
+              <label className="block text__lable mb-2" htmlFor="projectName">
                 Name
               </label>
               <Input
@@ -87,10 +84,7 @@ const EditForm = ({ categories, detail }) => {
               )}
             </div>
             <div>
-              <label
-                className="block text-sm font-medium mb-2"
-                htmlFor="category"
-              >
+              <label className="block text__lable mb-2" htmlFor="category">
                 Category
               </label>
               <Select
@@ -130,9 +124,13 @@ const EditForm = ({ categories, detail }) => {
               />
             </div>
 
-            <CardFooter className="flex justify-end pr-0 space-x-5">
-              <Button variant="destructive">Cancel</Button>
-              <Button type="submit">Update</Button>
+            <CardFooter className="flex justify-end pr-0 space-x-2">
+              <Button className="btn hover:text-red-600" variant="outline">
+                Cancel
+              </Button>
+              <Button className="btn" color="primary" type="submit">
+                Update
+              </Button>
             </CardFooter>
           </form>
         </CardContent>
