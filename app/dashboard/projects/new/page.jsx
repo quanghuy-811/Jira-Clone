@@ -48,13 +48,13 @@ export default function CreateProjectPage() {
     }),
     validateOnBlur: false,
     onSubmit: async (values) => {
-      console.log("values: ", values);
       try {
         await projectService.createProject(values);
+        router.refresh();
         toast.success("Create Success");
         router.push("/dashboard/projects");
       } catch (error) {
-        console.log(error);
+        console.log("error: ", error);
         toast.error(
           error?.response.data.content || "Failed to create project:"
         );
@@ -70,9 +70,7 @@ export default function CreateProjectPage() {
         const response = await projectService.getCategories();
 
         setCategories(response);
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-      }
+      } catch (error) {}
     };
 
     fetchCategories();

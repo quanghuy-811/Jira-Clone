@@ -1,5 +1,4 @@
 import axios from "axios";
-import { API_CONFIG } from "@/config/apiConfig";
 import { getClientAuthToken, getServerAuthToken } from "./utils";
 
 export const axiosInstance = () => {
@@ -33,12 +32,8 @@ export const axiosInstance = () => {
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
-      // console.log(error);
+      console.log(error);
 
-      if (error.response?.status === 401) {
-        // localStorage.removeItem("accessToken");
-        // window.location.href = "/auth/login";
-      }
       return Promise.reject(error);
     }
   );

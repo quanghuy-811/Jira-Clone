@@ -9,6 +9,8 @@ import { Card, CardHeader, CardContent } from "../ui/card";
 import { loginSuccess } from "@/store/slices/authSlice";
 import { authService } from "@/lib/services/authService";
 import { setCookies } from "@/lib/utils";
+import Link from "next/link";
+import { toast } from "sonner";
 
 export function LoginForm() {
   const router = useRouter();
@@ -39,6 +41,7 @@ export function LoginForm() {
       );
 
       router.push("/dashboard/projects");
+      toast.success("login success");
     } catch (error) {
       setError(error.response?.data?.message || "Login failed");
     } finally {
@@ -47,38 +50,50 @@ export function LoginForm() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <h1 className="text-2xl font-bold text-center">Login</h1>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-            required
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-            required
-          />
-          {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
-          )}
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <div className="p-8 md:p-0">
+      <Card>
+        <CardHeader>
+          <h1 className="text-2xl font-bold text-center">Login</h1>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              required
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              required
+            />
+            {error && (
+              <div className="text-red-500 text-sm text-center">{error}</div>
+            )}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+
+            <div className="mt-4 text-center text-xs md:text-sm text-gray-600">
+              Don't have an account yet?{" "}
+              <Link
+                href="/auth/register"
+                className="text-blue-600 hover:underline font-semibold"
+              >
+                Register now
+              </Link>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

@@ -108,7 +108,7 @@ const UserList = ({ users }) => {
       <div className="block md:hidden">
         <div className="space-y-3">
           {paginateUsers.map((user) => (
-            <Card key={user.id}>
+            <Card key={user.userId}>
               <CardHeader>
                 <CardTitle className="flex justify-between items-center">
                   <h2 className="text-sm">User ID: {user.userId}</h2>

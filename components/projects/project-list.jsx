@@ -16,19 +16,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Ellipsis, Pen, Search, Trash } from "lucide-react";
 import { projectService } from "@/lib/services/projectService";
 import { AddMemberDialog } from "../add-member-dialog";
 import { useRouter } from "next/navigation";
-// import {
-//   Tooltip,
-//   TooltipContent,
-//   TooltipProvider,
-//   TooltipTrigger,
-// } from "../ui/tooltip";
 import Link from "next/link";
 import { toast } from "sonner";
 import PaginationData from "./paginationData";
@@ -40,15 +33,16 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Tooltip } from "antd";
-import { categoryColors } from "@/lib/utils";
-import { Badge } from "../ui/badge";
+import { setProject } from "@/store/slices/projectSlice";
 
 export function ProjectList({ projects, users }) {
+  const dispatch = useDispatch();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // Số project trên mỗi trang
   const currentUser = useSelector((state) => state.auth.user);
+  const { projectList } = useSelector((state) => state.projects);
 
   const handleDeleteProject = async (projectId) => {
     try {
@@ -73,6 +67,9 @@ export function ProjectList({ projects, users }) {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  useEffect(() => {
+    dispatch(setProject(projects));
+  }, [projects]);
 
   return (
     <div className="space-y-4">

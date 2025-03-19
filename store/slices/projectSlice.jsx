@@ -81,6 +81,9 @@ const projectSlice = createSlice({
         });
       }
     },
+    setProject: (state, action) => {
+      state.projectList = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -117,6 +120,7 @@ const projectSlice = createSlice({
   },
 });
 
-export const { setProjectDetail, updateStatusUI } = projectSlice.actions;
+export const { setProjectDetail, updateStatusUI, setProject } =
+  projectSlice.actions;
 
 export default projectSlice.reducer;

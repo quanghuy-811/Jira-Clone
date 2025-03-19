@@ -10,6 +10,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { loginSuccess } from "@/store/slices/authSlice";
 import { authService } from "@/lib/services/authService";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -31,22 +32,8 @@ export default function RegisterPage() {
     try {
       await authService.register(formData);
 
-      const loginResponse = await authService.login({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      Cookies.set("accessToken", loginResponse.content.accessToken);
-      Cookies.set("userData", JSON.stringify(loginResponse.content));
-
-      dispatch(
-        loginSuccess({
-          user: loginResponse.content,
-          accessToken: loginResponse.content.accessToken,
-        })
-      );
-
-      window.location.href = "/dashboard/projects";
+      toast.success("Sign up success. Please login");
+      router.push("/auth/login");
     } catch (error) {
       console.error("Registration error:", error);
       setError(error.response?.data?.message || "Registration failed");
@@ -61,7 +48,9 @@ export default function RegisterPage() {
       <div className="flex-1 flex justify-center items-center p-8 bg-white">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold">Create your account</h2>
+            <h2 className="text-2xl lg:text-3xl font-bold">
+              Create your account
+            </h2>
             <p className="text-gray-600 mt-2">
               Start your journey with our Jira Clone
             </p>
@@ -121,18 +110,18 @@ export default function RegisterPage() {
                   </div>
                 )}
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full btn" disabled={loading}>
                   {loading ? "Creating account..." : "Sign up"}
                 </Button>
               </form>
 
-              <div className="mt-4 text-center text-sm text-gray-600">
+              <div className="mt-4 text-center text-xs md:text-sm text-gray-600">
                 Already have an account?{" "}
                 <Link
                   href="/auth/login"
                   className="text-blue-600 hover:underline font-semibold"
                 >
-                  Sign in
+                  Login
                 </Link>
               </div>
             </CardContent>
