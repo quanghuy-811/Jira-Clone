@@ -2,7 +2,7 @@ import { Loading } from "@/components/loading";
 import UserList from "@/components/user/userList";
 import { userService } from "@/lib/services/userService";
 import React, { Suspense } from "react";
-
+export const dynamic = "force-dynamic";
 const UserPage = async () => {
   try {
     const allUsers = await userService.getUser();
