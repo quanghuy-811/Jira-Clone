@@ -29,7 +29,7 @@ function AuthProvider({ children }) {
     }
   }, [token]);
   useEffect(() => {
-    if (isAuthenticated) {
+    if (!isAuthenticated) {
       dispatch(getTaskInfo());
     }
   }, [isAuthenticated]);

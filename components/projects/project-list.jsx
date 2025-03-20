@@ -42,7 +42,8 @@ export function ProjectList({ projects, users }) {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // Số project trên mỗi trang
   const currentUser = useSelector((state) => state.auth.user);
-  const { projectList } = useSelector((state) => state.projects);
+
+  console.log(projects);
 
   const handleDeleteProject = async (projectId) => {
     try {
