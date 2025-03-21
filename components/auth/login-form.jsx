@@ -40,7 +40,7 @@ export function LoginForm() {
         })
       );
 
-      router.replace("/dashboard/projects");
+      window.location.href("/dashboard/projects");
       toast.success("login success");
     } catch (error) {
       setError(error.response?.data?.message || "Login failed");
