@@ -40,9 +40,10 @@ export function LoginForm() {
         })
       );
 
-      window.location.href("/dashboard/projects");
+      window.location.href = "/dashboard/projects";
       toast.success("login success");
     } catch (error) {
+      console.log("error: ", error);
       setError(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);

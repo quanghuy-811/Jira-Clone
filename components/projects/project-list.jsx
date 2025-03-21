@@ -25,13 +25,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import PaginationData from "./paginationData";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Tooltip } from "antd";
 import { setProject } from "@/store/slices/projectSlice";
 
@@ -42,8 +36,6 @@ export function ProjectList({ projects, users }) {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // Số project trên mỗi trang
   const currentUser = useSelector((state) => state.auth.user);
-
-  console.log(projects);
 
   const handleDeleteProject = async (projectId) => {
     try {
