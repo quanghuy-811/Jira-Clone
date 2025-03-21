@@ -215,7 +215,9 @@ export function AddMemberDialog({ children, projectDetail, users }) {
                             </div>
                           ))
                         ) : (
-                          <p className="text-center text-gray-500">No member</p>
+                          <p className="text-center text-sm text-gray-400">
+                            User not found in the project
+                          </p>
                         )}
                       </div>
                     </ScrollArea>

@@ -16,10 +16,7 @@ export const getUserByProjectId = createAsyncThunk(
 
       return response.content;
     } catch (error) {
-      return thunkAPI.rejectWithValue({
-        status: error.response?.status || 500,
-        message: error.response?.data?.content || "Failed",
-      });
+      return thunkAPI.rejectWithValue(error.response);
     }
   }
 );
@@ -115,11 +112,13 @@ const userSlice = createSlice({
         state.membersInProject.errorListMember = null;
       })
       .addCase(getUserByProjectId.rejected, (state, action) => {
+        console.log(action.payload);
+
         state.membersInProject.loadingListMember = false;
         if (action.payload.status === 404) {
-          state.membersInProject.detail = [];
+          state.membersInProject.listMember = [];
         }
-        state.membersInProject.errorListMember = action.payload?.message;
+        state.membersInProject.errorListMember = action.payload?.data.content;
       });
   },
 });
