@@ -2,10 +2,8 @@ import { memo, useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +18,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "../ui/scroll-area";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProject } from "@/store/slices/projectSlice";
+import { fetchProject, setProjectUser } from "@/store/slices/projectSlice";
 import {
   Popover,
   PopoverAnchor,
@@ -28,7 +26,6 @@ import {
   PopoverTrigger,
 } from "../ui/popover";
 import { Check, Inbox, X } from "lucide-react";
-
 import { getUserByProjectId } from "@/store/slices/userSlice";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -45,7 +42,7 @@ const FormCreateTask = ({ isOpen, onClose }) => {
   );
   const { projectList, projectUser } = useSelector((state) => state.projects);
   const { membersInProject } = useSelector((state) => state.user);
-
+  const user = useSelector((state) => state.auth.user);
   const filter = membersInProject.listMember?.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -97,15 +94,16 @@ const FormCreateTask = ({ isOpen, onClose }) => {
 
   // change select Project
   const onChangeSelectProject = (value) => {
-    // dispatch(getProjectById({ projectId: value }));
     dispatch(getUserByProjectId({ projectId: value }));
     formik.setFieldValue("projectId", value);
   };
   useEffect(() => {
     if (isOpen && projectList.length === 0) {
       dispatch(fetchProject());
+    } else {
+      dispatch(setProjectUser(user?.id));
     }
-  }, [isOpen]);
+  }, [isOpen, projectList]);
 
   return (
     <div>

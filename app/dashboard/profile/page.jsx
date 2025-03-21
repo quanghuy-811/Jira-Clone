@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import {
@@ -11,22 +11,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchProject } from "@/store/slices/projectSlice";
+import { fetchProject, setProjectUser } from "@/store/slices/projectSlice";
 import Link from "next/link";
 
 export default function ProfilePage() {
   const dispatch = useDispatch();
-
   const user = useSelector((state) => state.auth.user);
-  const [projectUser, setProjectUser] = useState(null);
-  const { projectList, loading } = useSelector((state) => state.projects);
+  const { projectList, projectUser, loading } = useSelector(
+    (state) => state.projects
+  );
 
   useEffect(() => {
     if (projectList.length > 0) {
-      const filter = projectList.filter(
-        (project) => project.creator.id === user?.id
-      );
-      setProjectUser(filter);
+      dispatch(setProjectUser(user?.id));
     } else {
       dispatch(fetchProject());
     }

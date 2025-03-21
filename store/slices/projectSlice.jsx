@@ -42,6 +42,7 @@ const projectSlice = createSlice({
   initialState: {
     projectDetail: null,
     projectList: [],
+    projectUser: null,
     loading: false,
     error: null,
   },
@@ -84,6 +85,11 @@ const projectSlice = createSlice({
     setProject: (state, action) => {
       state.projectList = action.payload;
     },
+    setProjectUser: (state, actinon) => {
+      state.projectUser = state.projectList.filter(
+        (project) => project.creator.id === actinon.payload
+      );
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -120,7 +126,7 @@ const projectSlice = createSlice({
   },
 });
 
-export const { setProjectDetail, updateStatusUI, setProject } =
+export const { setProjectDetail, updateStatusUI, setProject, setProjectUser } =
   projectSlice.actions;
 
 export default projectSlice.reducer;
