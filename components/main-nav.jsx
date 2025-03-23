@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
-import { logout } from "@/store/slices/authSlice";
-import { removeCookies } from "@/lib/utils";
-import { useState } from "react";
+import { loginSuccess, logout } from "@/store/slices/authSlice";
+import { getClientAuthToken, removeCookies } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import FormCreateTask from "./board/formCreateTask";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import {
@@ -28,9 +28,24 @@ export function MainNav() {
     return state.auth;
   });
 
+  useEffect(() => {
+    const token = getClientAuthToken("accessToken");
+    const userData = getClientAuthToken("userData");
+    if (token) {
+      dispatch(
+        loginSuccess({
+          user: userData,
+          accessToken: token,
+        })
+      );
+    }
+  }, []);
+
   const handleLogout = () => {
     dispatch(logout());
     removeCookies("accessToken");
+    removeCookies("userData");
+
     router.push("/");
   };
 

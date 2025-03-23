@@ -30,8 +30,8 @@ export function LoginForm() {
     try {
       const response = await authService.login(formData);
 
-      setCookies("accessToken", response.content.accessToken);
-      setCookies("userData", response.content);
+      await setCookies("accessToken", response.content.accessToken);
+      await setCookies("userData", response.content);
 
       dispatch(
         loginSuccess({
@@ -40,7 +40,7 @@ export function LoginForm() {
         })
       );
 
-      window.location.href = "/dashboard/projects";
+      router.replace("/dashboard/projects");
       toast.success("login success");
     } catch (error) {
       console.log("error: ", error);

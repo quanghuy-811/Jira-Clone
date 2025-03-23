@@ -5,7 +5,6 @@ import { projectService } from "@/lib/services/projectService";
 import { userService } from "@/lib/services/userService";
 import Link from "next/link";
 import { Suspense } from "react";
-export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
   try {

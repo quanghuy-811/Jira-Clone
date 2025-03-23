@@ -11,23 +11,7 @@ import { getTaskInfo } from "@/store/slices/boardSlice";
 function AuthProvider({ children }) {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const token = getClientAuthToken("accessToken");
 
-  useEffect(() => {
-    if (token) {
-      const userData = getClientAuthToken("userData");
-
-      if (userData) {
-        dispatch(
-          loginSuccess({
-            accessToken: token,
-            user: userData,
-            isAuthenticated: true,
-          })
-        );
-      }
-    }
-  }, [token]);
   useEffect(() => {
     if (!isAuthenticated) {
       dispatch(getTaskInfo());
