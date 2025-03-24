@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { projectService } from "@/lib/services/projectService";
 import { userService } from "@/lib/services/userService";
 import Link from "next/link";
+export const dynamic = "force-dynamic";
 import { Suspense } from "react";
 
 export default async function ProjectsPage() {
