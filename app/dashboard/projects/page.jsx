@@ -14,6 +14,7 @@ export default async function ProjectsPage() {
       throw new Error("Dữ liệu không hợp lệ");
     }
 
+    console.log(allProject.content);
     return (
       <div>
         <div className="flex justify-between items-center mb-6">
