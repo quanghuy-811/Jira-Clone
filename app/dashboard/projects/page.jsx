@@ -7,14 +7,17 @@ export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
   try {
+    console.log("Fetching projects..."); // Kiểm tra xem có chạy đến đây không
     const allProject = await projectService.getAllProjects();
     const allUsers = await userService.getUser();
+
+    console.log("allUsers: ", allUsers);
+    console.log("allProject: ", allProject);
 
     if (!allProject?.content || !allUsers?.content) {
       throw new Error("Dữ liệu không hợp lệ");
     }
 
-    console.log(allProject.content);
     return (
       <div>
         <div className="flex justify-between items-center mb-6">
