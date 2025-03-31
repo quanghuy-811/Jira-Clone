@@ -11,8 +11,8 @@ export default async function ProjectsPage() {
     const allProject = await projectService.getAllProjects();
     const allUsers = await userService.getUser();
 
-    console.log("allUsers: ", allUsers);
-    console.log("allProject: ", allProject);
+    // console.log("allUsers: ", allUsers);
+    // console.log("allProject: ", allProject);
 
     if (!allProject?.content || !allUsers?.content) {
       throw new Error("Dữ liệu không hợp lệ");
@@ -28,7 +28,8 @@ export default async function ProjectsPage() {
             </Link>
           </Button>
         </div>
-        <ProjectList projects={allProject.content} users={allUsers.content} />
+        <h1>Project</h1>
+        {/* <ProjectList projects={allProject.content} users={allUsers.content} /> */}
       </div>
     );
   } catch (error) {
