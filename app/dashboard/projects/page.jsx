@@ -12,6 +12,10 @@ export default async function ProjectsPage() {
     const allProject = await projectService.getAllProjects();
     const allUsers = await userService.getUser();
 
+    if (!allProject?.content || !allUsers?.content) {
+      throw new Error("Dữ liệu không hợp lệ");
+    }
+
     return (
       <div>
         <div className="flex justify-between items-center mb-6">
