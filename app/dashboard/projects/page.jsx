@@ -1,11 +1,9 @@
-import { Loading } from "@/components/loading";
 import { ProjectList } from "@/components/projects/project-list";
 import { Button } from "@/components/ui/button";
 import { projectService } from "@/lib/services/projectService";
 import { userService } from "@/lib/services/userService";
 import Link from "next/link";
 export const dynamic = "force-dynamic";
-import { Suspense } from "react";
 
 export default async function ProjectsPage() {
   try {
@@ -26,9 +24,7 @@ export default async function ProjectsPage() {
             </Link>
           </Button>
         </div>
-        <Suspense fallback={<Loading />}>
-          <ProjectList projects={allProject.content} users={allUsers.content} />
-        </Suspense>
+        <ProjectList projects={allProject.content} users={allUsers.content} />
       </div>
     );
   } catch (error) {
