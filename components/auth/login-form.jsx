@@ -25,13 +25,13 @@ export function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
     try {
       const response = await authService.login(formData);
 
-      await setCookies("accessToken", response.content.accessToken);
-      await setCookies("userData", response.content);
+      setCookies("accessToken", response.content.accessToken);
+      setCookies("userData", response.content);
+      setLoading(true);
 
       dispatch(
         loginSuccess({

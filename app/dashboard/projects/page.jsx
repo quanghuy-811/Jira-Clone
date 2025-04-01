@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
   try {
-    console.log("Fetching projects..."); // Kiểm tra xem có chạy đến đây không
+    // console.log("Fetching projects..."); // Kiểm tra xem có chạy đến đây không
     const allProject = await projectService.getAllProjects();
     const allUsers = await userService.getUser();
 
@@ -28,8 +28,7 @@ export default async function ProjectsPage() {
             </Link>
           </Button>
         </div>
-        <h1>Project</h1>
-        {/* <ProjectList projects={allProject.content} users={allUsers.content} /> */}
+        <ProjectList projects={allProject.content} users={allUsers.content} />
       </div>
     );
   } catch (error) {
