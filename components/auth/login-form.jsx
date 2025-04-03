@@ -31,7 +31,6 @@ export function LoginForm() {
 
       setCookies("accessToken", response.content.accessToken);
       setCookies("userData", response.content);
-      setLoading(true);
 
       dispatch(
         loginSuccess({
@@ -40,7 +39,11 @@ export function LoginForm() {
         })
       );
 
-      router.replace("/dashboard/projects");
+      setTimeout(() => {
+        setLoading(true);
+
+        router.push("/dashboard/projects");
+      }, 400);
       toast.success("login success");
     } catch (error) {
       console.log("error: ", error);

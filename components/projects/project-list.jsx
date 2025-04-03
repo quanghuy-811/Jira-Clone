@@ -27,12 +27,11 @@ import { toast } from "sonner";
 import PaginationData from "./paginationData";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Tooltip } from "antd";
-// import { setProject } from "@/store/slices/projectSlice";
+import { setProject } from "@/store/slices/projectSlice";
 
-export function ProjectList() {
+export function ProjectList({ projects, users }) {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [projects, setProjects] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // Số project trên mỗi trang
@@ -50,10 +49,10 @@ export function ProjectList() {
   };
 
   const isCreator = (project) => {
-    return project.creator?.id === currentUser?.id;
+    return project.creator.id === currentUser?.id;
   };
 
-  const filteredProjects = projects?.filter((project) =>
+  const filteredProjects = projects.filter((project) =>
     project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -62,20 +61,7 @@ export function ProjectList() {
     currentPage * pageSize
   );
   useEffect(() => {
-    console.log("Fetching projects...");
-
-    const fetchdata = async () => {
-      try {
-        const reponse = await projectService.getAllProjects();
-        console.log("reponse: ", reponse);
-
-        setProjects(reponse.content);
-      } catch (error) {}
-    };
-
-    fetchdata();
-
-    // dispatch(setProject(projects));
+    dispatch(setProject(projects));
   }, []);
 
   return (
@@ -126,7 +112,7 @@ export function ProjectList() {
                   )}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">
-                  {/* <AddMemberDialog projectDetail={project} users={users}>
+                  <AddMemberDialog projectDetail={project} users={users}>
                     {(openDialog) => (
                       <Button
                         className="text-white"
@@ -137,7 +123,7 @@ export function ProjectList() {
                         Members ({project.members?.length || 0})
                       </Button>
                     )}
-                  </AddMemberDialog> */}
+                  </AddMemberDialog>
                 </TableCell>
                 <TableCell>
                   {isCreator(project) ? (
@@ -187,7 +173,7 @@ export function ProjectList() {
       </div>
 
       {/* Mobile */}
-      {/* <div className="md:hidden">
+      <div className="md:hidden">
         <div className="space-y-3">
           {paginatedProjects.map((project) => (
             <Card key={project.id}>
@@ -276,7 +262,7 @@ export function ProjectList() {
             </Card>
           ))}
         </div>
-      </div> */}
+      </div>
 
       <PaginationData
         totalItems={filteredProjects?.length}
