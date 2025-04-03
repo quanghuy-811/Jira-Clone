@@ -27,11 +27,12 @@ import { toast } from "sonner";
 import PaginationData from "./paginationData";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Tooltip } from "antd";
-import { setProject } from "@/store/slices/projectSlice";
+// import { setProject } from "@/store/slices/projectSlice";
 
-export function ProjectList({ projects, users }) {
+export function ProjectList() {
   const dispatch = useDispatch();
   const router = useRouter();
+  const [projects, setProjects] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // Số project trên mỗi trang
@@ -52,17 +53,30 @@ export function ProjectList({ projects, users }) {
     return project.creator?.id === currentUser?.id;
   };
 
-  const filteredProjects = projects.filter((project) =>
+  const filteredProjects = projects?.filter((project) =>
     project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const paginatedProjects = filteredProjects.slice(
+  const paginatedProjects = filteredProjects?.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
   useEffect(() => {
-    dispatch(setProject(projects));
-  }, [projects]);
+    console.log("Fetching projects...");
+
+    const fetchdata = async () => {
+      try {
+        const reponse = await projectService.getAllProjects();
+        console.log("reponse: ", reponse);
+
+        setProjects(reponse.content);
+      } catch (error) {}
+    };
+
+    fetchdata();
+
+    // dispatch(setProject(projects));
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -89,7 +103,7 @@ export function ProjectList({ projects, users }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedProjects.map((project) => (
+            {paginatedProjects?.map((project) => (
               <TableRow
                 className="hover:bg-gray-200 transition-all duration-300"
                 key={project.id}
@@ -112,7 +126,7 @@ export function ProjectList({ projects, users }) {
                   )}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">
-                  <AddMemberDialog projectDetail={project} users={users}>
+                  {/* <AddMemberDialog projectDetail={project} users={users}>
                     {(openDialog) => (
                       <Button
                         className="text-white"
@@ -123,7 +137,7 @@ export function ProjectList({ projects, users }) {
                         Members ({project.members?.length || 0})
                       </Button>
                     )}
-                  </AddMemberDialog>
+                  </AddMemberDialog> */}
                 </TableCell>
                 <TableCell>
                   {isCreator(project) ? (
@@ -173,7 +187,7 @@ export function ProjectList({ projects, users }) {
       </div>
 
       {/* Mobile */}
-      <div className="md:hidden">
+      {/* <div className="md:hidden">
         <div className="space-y-3">
           {paginatedProjects.map((project) => (
             <Card key={project.id}>
@@ -262,10 +276,10 @@ export function ProjectList({ projects, users }) {
             </Card>
           ))}
         </div>
-      </div>
+      </div> */}
 
       <PaginationData
-        totalItems={filteredProjects.length}
+        totalItems={filteredProjects?.length}
         pageSize={pageSize}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
