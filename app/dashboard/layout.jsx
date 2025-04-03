@@ -6,7 +6,7 @@ export default function DashboardLayout({ children }) {
     <div className="min-h-screen flex flex-col bg-gray-100">
       <MainNav />
       <main className="container flex-grow mx-auto py-6 px-4">{children}</main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
