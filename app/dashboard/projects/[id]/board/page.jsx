@@ -14,9 +14,10 @@ const Board = async (props) => {
   const { id } = await props.params;
 
   try {
-    const response = await projectService.getProjectById(id);
-    const projectDetail = response.content;
-    const allUsers = await userService.getUser();
+    const [projectDetail, allUsers] = await Promise.all([
+      projectService.getProjectById(id),
+      userService.getUser(),
+    ]);
 
     return (
       <div className="px-8 mx-auto">
@@ -41,7 +42,7 @@ const Board = async (props) => {
 
         <div className="mt-5">
           <BoardContent
-            project={structuredClone(projectDetail)}
+            project={projectDetail.content}
             users={allUsers.content}
           />
         </div>
