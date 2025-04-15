@@ -34,7 +34,6 @@ const EditForm = ({ categories, detail }) => {
     onSubmit: async (values) => {
       try {
         const reponse = await projectService.updateProject(values.id, values);
-
         router.push("/dashboard/projects");
         toast.success("Success");
       } catch (error) {
@@ -125,7 +124,14 @@ const EditForm = ({ categories, detail }) => {
             </div>
 
             <CardFooter className="flex justify-end pr-0 space-x-2">
-              <Button className="btn hover:text-red-600" variant="outline">
+              <Button
+                type="button"
+                className="btn hover:text-red-600"
+                variant="outline"
+                onClick={() => {
+                  router.push("/dashboard/projects");
+                }}
+              >
                 Cancel
               </Button>
               <Button className="btn" color="primary" type="submit">

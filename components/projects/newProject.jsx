@@ -45,7 +45,6 @@ const NewProject = () => {
     onSubmit: async (values) => {
       try {
         await projectService.createProject(values);
-        router.refresh();
         toast.success("Create Success");
         router.push("/dashboard/projects");
       } catch (error) {

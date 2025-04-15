@@ -25,7 +25,11 @@ const Board = async (props) => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <Link className="text-gray-800" href="/dashboard/projects">
+                <Link
+                  prefetch={true}
+                  href="/dashboard/projects"
+                  className="text-gray-800"
+                >
                   Projects
                 </Link>
               </BreadcrumbItem>
