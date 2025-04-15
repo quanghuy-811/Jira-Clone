@@ -61,8 +61,9 @@ export function ProjectList({ projects, users }) {
     currentPage * pageSize
   );
   useEffect(() => {
+    if (!projects) return;
     dispatch(setProject(projects));
-  }, []);
+  }, [projects]);
 
   return (
     <div className="space-y-4">

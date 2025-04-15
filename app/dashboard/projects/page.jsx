@@ -7,9 +7,6 @@ export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
   try {
-    // const allProject = await projectService.getAllProjects();
-    // const allUsers = await userService.getUser();
-
     const [allProject, allUsers] = await Promise.all([
       projectService.getAllProjects(),
       userService.getUser(),
@@ -25,7 +22,7 @@ export default async function ProjectsPage() {
             </Link>
           </Button>
         </div>
-        <ProjectList projects={allProject.content} users={allUsers.content} />
+        <ProjectList projects={allProject?.content} users={allUsers?.content} />
       </div>
     );
   } catch (error) {

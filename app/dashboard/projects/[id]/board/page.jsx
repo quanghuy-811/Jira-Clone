@@ -34,7 +34,7 @@ const Board = async (props) => {
                 className="text-gray-800"
                 href={`/dashboard/projects/${id}/board`}
               >
-                {projectDetail.projectName}
+                {projectDetail?.content?.projectName}
               </Link>
             </BreadcrumbList>
           </Breadcrumb>
@@ -42,8 +42,8 @@ const Board = async (props) => {
 
         <div className="mt-5">
           <BoardContent
-            project={projectDetail.content}
-            users={allUsers.content}
+            project={projectDetail?.content}
+            users={allUsers?.content}
           />
         </div>
       </div>
