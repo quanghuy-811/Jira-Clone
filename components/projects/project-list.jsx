@@ -28,6 +28,7 @@ import PaginationData from "./paginationData";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Tooltip } from "antd";
 import { setProject } from "@/store/slices/projectSlice";
+import { CategoryLabel } from "../category-label";
 
 export function ProjectList({ projects, users }) {
   const dispatch = useDispatch();
@@ -105,7 +106,7 @@ export function ProjectList({ projects, users }) {
                   </Link>
                 </TableCell>
                 <TableCell className={`hidden md:table-cell  `}>
-                  {project.categoryName}
+                  <CategoryLabel name={project.categoryName} />
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">
                   {project.creator?.name || (
@@ -116,10 +117,9 @@ export function ProjectList({ projects, users }) {
                   <AddMemberDialog projectDetail={project} users={users}>
                     {(openDialog) => (
                       <Button
-                        className="text-white"
+                        className=" h-7 px-2.5 text-xs text-green-500 border-green-500 bg-green-50 font-medium hover:bg-green-50 hover:shadow-lg hover:text-green-500 transition-transform duration-200 hover:scale-105"
                         variant="outline"
-                        color="primary"
-                        onClick={openDialog} // ✅ Vẫn dùng như cũ
+                        onClick={openDialog}
                       >
                         Members ({project.members?.length || 0})
                       </Button>
