@@ -1,7 +1,7 @@
 import GlobalLoading from "@/components/loading";
 import React from "react";
 
-const Loading = () => {
+const Projetcloading = () => {
   return (
     <div>
       <GlobalLoading />
@@ -9,4 +9,4 @@ const Loading = () => {
   );
 };
 
-export default Loading;
+export default Projetcloading;
