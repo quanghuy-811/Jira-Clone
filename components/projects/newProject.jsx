@@ -46,7 +46,8 @@ const NewProject = () => {
       try {
         await projectService.createProject(values);
         toast.success("Create Success");
-        router.push("/dashboard/projects");
+        await router.push("/dashboard/projects");
+        router.refresh();
       } catch (error) {
         console.log("error: ", error);
         toast.error(
