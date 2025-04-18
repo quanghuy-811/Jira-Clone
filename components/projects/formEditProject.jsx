@@ -33,9 +33,10 @@ const EditForm = ({ categories, detail }) => {
     validateOnBlur: false,
     onSubmit: async (values) => {
       try {
-        const reponse = await projectService.updateProject(values.id, values);
-        router.push("/dashboard/projects");
+        await projectService.updateProject(values.id, values);
         toast.success("Success");
+        await router.push("/dashboard/projects");
+        router.refresh();
       } catch (error) {
         toast.error("Update failed");
       }
