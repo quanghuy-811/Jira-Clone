@@ -21,6 +21,7 @@ import TaskEstimate from "./taskEstimate";
 import TaskTimeTracking from "./taskTimeTracking";
 import TaskTypeBadge from "./taskTypeBadge";
 import { Button } from "../ui/button";
+import DialogDeleteTask from "./dialog-delete-task";
 
 const DetailTaskDialog = ({ isOpen, onClose, taskId }) => {
   const {
@@ -111,13 +112,9 @@ const DetailTaskDialog = ({ isOpen, onClose, taskId }) => {
               </Select>
 
               <div className="h-full flex items-center space-x-4">
-                <Button
-                  onClick={() => handleRemoveTask(taskDetail.taskId)}
-                  variant="ghost"
-                  size="icon"
-                >
-                  <Trash />
-                </Button>
+                <DialogDeleteTask
+                  deleteTask={() => handleRemoveTask(taskDetail.taskId)}
+                />
 
                 <Button onClick={onClose} variant="ghost" size="icon">
                   <X />
