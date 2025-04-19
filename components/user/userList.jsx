@@ -39,7 +39,7 @@ const UserList = ({ users }) => {
   };
 
   const filterUser = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+    user.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
 
   const paginateUsers = filterUser.slice(

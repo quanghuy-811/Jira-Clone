@@ -54,7 +54,7 @@ export function ProjectList({ projects, users }) {
   };
 
   const filteredProjects = projects.filter((project) =>
-    project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+    project.projectName.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
 
   const paginatedProjects = filteredProjects?.slice(
